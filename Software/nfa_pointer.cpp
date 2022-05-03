@@ -2,7 +2,8 @@
 #include <stack>
 #include <stdlib.h>
 #include <string>
-
+//#include <vector>
+#include <list>
 /*
  * Represents an NFA state plus zero or one or two arrows exiting.
  * if c == Match, no arrows out; matching state.
@@ -19,13 +20,14 @@ enum
 
 struct State
 {
+	int number_;
   int c_;
   State *out1_;
   State *out2_;
   int lastlist_;
 };
 
-State matchstate = { Match }; // Zielzustand
+State matchstate = {0, Match, nullptr, nullptr, 0}; // Zielzustand
 int nstate{0}; //Anzahl aller States;
 
 /* Allocate and initialize State */
@@ -34,7 +36,7 @@ State* state(int c, State *out1, State *out2)
   nstate++;
 
   State *s = new State; //statt  s = malloc(sizeof *s)
-
+	s->number_ = nstate;
   s->c_ = c;
   s->out1_ = out1;
   s->out2_ = out2;
@@ -94,7 +96,7 @@ struct Frag
   Ptrlist *out;
 };
 
-Frag frag(State * start, Ptrlist *out)
+Frag frag(State *start, Ptrlist *out)
 {
   Frag n = { start, out };
   return n;
@@ -111,7 +113,7 @@ State* post2nfaE(const std::string& postfix)
   Frag e,e1,e2;
   State *s;
   if(postfix.empty()) return nullptr;
-  for(int i = 0; i < postfix.size(); i++)
+  for(uint i = 0; i < postfix.size(); i++)
   {
     char p = postfix[i];
     switch(p){
@@ -157,14 +159,72 @@ State* post2nfaE(const std::string& postfix)
     }
   }
   e = stack.top();
+	if(e.start == nullptr) std::cout<<"Fuck"<<"\n";
+	else std::cout<<"ok"<<"\n";
   stack.pop();
+	std::cout<<stack.size()<<"\n";
   if(!stack.empty()) return nullptr;
   patch(e.out, & matchstate);
   return e.start;
 }
 
+void printNFA(State zeiger)
+{
+	//State zeiger = input;
+	State e,e1,e2;
+	std::list<State> queue;
+	queue.push_back(zeiger);
+	State s;
+	while(!queue.empty())
+	{
+		s = queue.front();
+		queue.pop_front();
+		if(s.lastlist_ == 1) continue;
+		else s.lastlist_ = 1;
+		std::cout<<"ID: "<< s.number_ <<"\n";
+		int c = s.c_;
+		switch(c)
+		{
+			case Split:
+			{
+				e1 = *s.out1_;
+				e2 = *s.out2_;
+				std::cout<<"Split"<<"\n";
+				std::cout<<"Erster: "<<e1.number_<<"\n";
+				std::cout<<"Zweiter"<<e2.number_<<"\n";
+				queue.push_back(e1);
+				queue.push_back(e2);
+				break;
+			}
+			case Match:
+			{
+				e = *s.out1_;
+				std::cout<<(char)c<<"\n";
+				std::cout<<"Erster: "<<e.number_<<"\n";
+				queue.push_back(e);
+				break;
+			}
+			default:
+			{
+				std::cout<<"Match"<<"\n";
+				break;
+			}
+		}
+	}
+
+}
 
 int main()
 {
+	std::string postfix = "ab.";
+	State * startptr;
+	startptr = post2nfaE(postfix);
+	//int c = (*startptr).c_;
+	if(startptr == nullptr) std::cout<<"F"<<"\n";
+	else std::cout<<"ok"<<"n";
+
+	//State start = *stateptr;
+	//printNFA(*stateptr);
+
   return 0;
 }
