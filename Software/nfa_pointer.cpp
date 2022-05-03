@@ -125,7 +125,7 @@ State* post2nfaE(const std::string& postfix)
               e2 = stack.top();
               stack.pop();
               e1 = stack.top();
-              stack.top();
+              stack.pop();
               patch(e1.out, e2.start);
               stack.push(frag(e1.start, e2.out));
               break;
@@ -133,7 +133,7 @@ State* post2nfaE(const std::string& postfix)
               e2 = stack.top();
               stack.pop();
               e1 = stack.top();
-              stack.top();
+              stack.pop();
               s = state(Split, e1.start, e2.start);
               stack.push(frag(s, append(e1.out, e2.out)));
               break;
@@ -162,7 +162,7 @@ State* post2nfaE(const std::string& postfix)
 	if(e.start == nullptr) std::cout<<"Fuck"<<"\n";
 	else std::cout<<"ok"<<"\n";
   stack.pop();
-	std::cout<<stack.size()<<"\n";
+
   if(!stack.empty()) return nullptr;
   patch(e.out, & matchstate);
   return e.start;
@@ -181,6 +181,7 @@ void printNFA(State zeiger)
 		queue.pop_front();
 		if(s.lastlist_ == 1) continue;
 		else s.lastlist_ = 1;
+		std::cout<<"==========================="<<"\n";
 		std::cout<<"ID: "<< s.number_ <<"\n";
 		int c = s.c_;
 		switch(c)
@@ -198,18 +199,22 @@ void printNFA(State zeiger)
 			}
 			case Match:
 			{
-				e = *s.out1_;
-				std::cout<<(char)c<<"\n";
-				std::cout<<"Erster: "<<e.number_<<"\n";
-				queue.push_back(e);
+				std::cout<<"Match"<<"\n";
 				break;
 			}
 			default:
 			{
-				std::cout<<"Match"<<"\n";
+				std::cout<<s.c_<<"\n";
+				if(s.out1_ == nullptr) std::cout<<"uff"<<"\n";
+				if(s.out2_ != nullptr) std::cout<<"???: "<<s.out2_->c_<<"\n";
+				e = *s.out2_;// Seg fault
+				std::cout<<(char)c<<"\n";
+				std::cout<<"Erster: "<<e.number_<<"\n";
+				//queue.push_back(e);
 				break;
 			}
 		}
+		std::cout<<"==========================="<<"\n";
 	}
 
 }
@@ -221,10 +226,12 @@ int main()
 	startptr = post2nfaE(postfix);
 	//int c = (*startptr).c_;
 	if(startptr == nullptr) std::cout<<"F"<<"\n";
-	else std::cout<<"ok"<<"n";
+	else
+	{
+		State start = *startptr;
 
 	//State start = *stateptr;
-	//printNFA(*stateptr);
-
+		printNFA(start);
+	}
   return 0;
 }
