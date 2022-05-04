@@ -2,7 +2,7 @@
 #include <stack>
 #include <stdlib.h>
 #include <string>
-//#include <vector>
+#include <vector>
 #include <list>
 /*
  * Represents an NFA state plus zero or one or two arrows exiting.
@@ -11,6 +11,7 @@
  * If c < 256, labeled arrow with character c to out.
  */
 
+int nstate{0}; //Anzahl aller States;
 
 enum
 {
@@ -22,13 +23,10 @@ struct State
 {
 	int number_;
   int c_;
-  State *out1_;
-  State *out2_;
-  int lastlist_;
+  State *out1_ = nullptr;
+  State *out2_ = nullptr;
+  int lastlist_ = 0;
 };
-
-State matchstate = {0, Match, nullptr, nullptr, 0}; // Zielzustand
-int nstate{0}; //Anzahl aller States;
 
 /* Allocate and initialize State */
 State* state(int c, State *out1, State *out2)
@@ -45,44 +43,6 @@ State* state(int c, State *out1, State *out2)
   return s;
 }
 
-struct Ptrlist
-{
-  Ptrlist *next;
-  State *s;
-};
-
-/* Create singleton list containing just outp. */
-Ptrlist* list1(State **outp)
-{
-  Ptrlist *l;
-
-  l =  (Ptrlist*) outp; // outp als ptrlist casten
-  l->next = nullptr;
-  return l;
-}
-
-/* Patch the list of states at out to point to start. */
-void patch(Ptrlist *l, State *s)
-{
-	Ptrlist *next;
-
-	for(; l != nullptr; l = l->next){
-		next = l->next;
-		l->s = s;
-	}
-}
-
-/* Join the two lists l1 and l2, returning the combination. */
-Ptrlist* append(Ptrlist *l1, Ptrlist *l2)
-{
-	Ptrlist *oldl1;
-
-	oldl1 = l1;
-	while(l1->next)
-		l1 = l1->next;
-	l1->next = l2;
-	return oldl1;
-}
 
 /*
  * A partially built NFA without the matching state filled in.
@@ -93,19 +53,54 @@ Ptrlist* append(Ptrlist *l1, Ptrlist *l2)
 struct Frag
 {
   State *start;
-  Ptrlist *out;
+  //Ptrlist *out;
+	std::vector<State *> out;
 };
 
-Frag frag(State *start, Ptrlist *out)
+Frag frag(State *start, 	std::vector<State *> out)
 {
   Frag n = { start, out };
   return n;
 }
 
+std::vector<State *> getVec(State *input)
+{
+	std::vector<State *> out{input};
+
+	return out;
+}
+
+std::vector<State *> appendVec(const	std::vector<State *>& vec1, const std::vector<State *>& vec2)
+{
+	std::vector<State *> out = vec1;
+	for(auto e : vec2)
+	{
+		out.push_back(e);
+	}
+	return out;
+}
+
+void patchVec(std::vector<State *>& in, State *s)
+{
+	for(auto e : in)
+	{
+		e->out1_ == nullptr ? e->out1_ = s : e->out2_ = s;
+		//e->out1_ = s;
+	}
+}
+/*
+Frag frag(State *start, Ptrlist *out)
+{
+  Frag n = { start, out };
+  return n;
+}
+*/
 /*
  * Convert postfix regular expression to NFA.
  * Return start state.
  */
+
+State *matchstate = state(Match, nullptr, nullptr); // Zielzustand
 
 State* post2nfaE(const std::string& postfix)
 {
@@ -119,14 +114,16 @@ State* post2nfaE(const std::string& postfix)
     switch(p){
       default:
               s = state(p, nullptr, nullptr);
-              stack.push(frag(s, list1(&s->out1_)));
+              //stack.push(frag(s, list1(&s->out1_)));
+							stack.push(frag(s, getVec(s)));
               break;
       case '.':  //concat
               e2 = stack.top();
               stack.pop();
               e1 = stack.top();
               stack.pop();
-              patch(e1.out, e2.start);
+							patchVec(e1.out, e2.start);
+              //patch(e1.out, e2.start);
               stack.push(frag(e1.start, e2.out));
               break;
       case '|':   //or
@@ -135,27 +132,34 @@ State* post2nfaE(const std::string& postfix)
               e1 = stack.top();
               stack.pop();
               s = state(Split, e1.start, e2.start);
-              stack.push(frag(s, append(e1.out, e2.out)));
+              //stack.push(frag(s, append(e1.out, e2.out)));
+							stack.push(frag(s, appendVec(e1.out, e2.out)));
               break;
       case '?': //0 oder 1 mal
               e = stack.top();
               stack.pop();
               s = state(Split, e.start, nullptr);
-              stack.push(frag(s, append(e.out, list1(&s->out2_))));
+							stack.push(frag(s, appendVec(e.out, getVec(s))));
+              //stack.push(frag(s, append(e.out, list1(&s->out2_))));
               break;
       case '*': //kleene
               e = stack.top();
               stack.pop();
               s = state(Split, e.start, nullptr);
-              patch(e.out, s);
-              stack.push(frag(s, append(e.out, list1(&s->out2_))));
+              //patch(e.out, s);
+							patchVec(e.out, s);
+							stack.push(frag(s, getVec(s)));
+              //stack.push(frag(s, append(e.out, list1(&s->out2_))));
               break;
       case '+':
               e = stack.top();
               stack.pop();
               s = state(Split, e.start, nullptr);
-              patch(e.out, s);
-              stack.push(frag(e.start, append(e.out, list1(&s->out2_))));
+							patchVec(e.out, s);
+							stack.push(frag(e.start, getVec(s)));
+              //patch(e.out, s);
+              //stack.push(frag(e.start, append(e.out, list1(&s->out2_))));
+							break;
     }
   }
   e = stack.top();
@@ -164,10 +168,10 @@ State* post2nfaE(const std::string& postfix)
   stack.pop();
 
   if(!stack.empty()) return nullptr;
-  patch(e.out, & matchstate);
+  patchVec(e.out, /*&*/ matchstate);
   return e.start;
 }
-
+/*
 void printNFA(State zeiger)
 {
 	//State zeiger = input;
@@ -218,20 +222,17 @@ void printNFA(State zeiger)
 	}
 
 }
-
+*/
 int main()
 {
-	std::string postfix = "ab.";
-	State * startptr;
-	startptr = post2nfaE(postfix);
-	//int c = (*startptr).c_;
-	if(startptr == nullptr) std::cout<<"F"<<"\n";
-	else
-	{
-		State start = *startptr;
 
-	//State start = *stateptr;
-		printNFA(start);
+	std::vector<std::string> a ={"a","ab.","ab|","a*","a+","a?"};
+	State * startptr;
+	for(auto e : a)
+	{
+		startptr = post2nfaE(e);
 	}
+
+
   return 0;
 }
