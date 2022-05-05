@@ -53,7 +53,6 @@ State* state(int c, State *out1, State *out2)
 struct Frag
 {
   State *start;
-  //Ptrlist *out;
 	std::vector<State *> out;
 };
 
@@ -88,13 +87,7 @@ void patchVec(std::vector<State *>& in, State *s)
 		//e->out1_ = s;
 	}
 }
-/*
-Frag frag(State *start, Ptrlist *out)
-{
-  Frag n = { start, out };
-  return n;
-}
-*/
+
 /*
  * Convert postfix regular expression to NFA.
  * Return start state.
@@ -171,68 +164,26 @@ State* post2nfaE(const std::string& postfix)
   patchVec(e.out, /*&*/ matchstate);
   return e.start;
 }
-/*
-void printNFA(State zeiger)
-{
-	//State zeiger = input;
-	State e,e1,e2;
-	std::list<State> queue;
-	queue.push_back(zeiger);
-	State s;
-	while(!queue.empty())
-	{
-		s = queue.front();
-		queue.pop_front();
-		if(s.lastlist_ == 1) continue;
-		else s.lastlist_ = 1;
-		std::cout<<"==========================="<<"\n";
-		std::cout<<"ID: "<< s.number_ <<"\n";
-		int c = s.c_;
-		switch(c)
-		{
-			case Split:
-			{
-				e1 = *s.out1_;
-				e2 = *s.out2_;
-				std::cout<<"Split"<<"\n";
-				std::cout<<"Erster: "<<e1.number_<<"\n";
-				std::cout<<"Zweiter"<<e2.number_<<"\n";
-				queue.push_back(e1);
-				queue.push_back(e2);
-				break;
-			}
-			case Match:
-			{
-				std::cout<<"Match"<<"\n";
-				break;
-			}
-			default:
-			{
-				std::cout<<s.c_<<"\n";
-				if(s.out1_ == nullptr) std::cout<<"uff"<<"\n";
-				if(s.out2_ != nullptr) std::cout<<"???: "<<s.out2_->c_<<"\n";
-				e = *s.out2_;// Seg fault
-				std::cout<<(char)c<<"\n";
-				std::cout<<"Erster: "<<e.number_<<"\n";
-				//queue.push_back(e);
-				break;
-			}
-		}
-		std::cout<<"==========================="<<"\n";
-	}
 
-}
-*/
 int main()
 {
 
-	std::vector<std::string> a ={"a","ab.","ab|","a*","a+","a?"};
+	//std::vector<std::string> a ={"a","ab.","ab|","a*","a+","a?"};
 	State * startptr;
+	//b+c?(a|b)*b+
+	//std::string a = "b+c?.ab|*.b+.";
+	//abc(cba)*abc
+	//std::string a = "ab.c.cb.a.*.ab.c..";
+	//a(b+|c+)d
+	std::string a = "ab+c+|.d.";
+	startptr = post2nfaE(a);
+	std::cout<<"ab"<<"\n";
+	/*
 	for(auto e : a)
 	{
 		startptr = post2nfaE(e);
 	}
-
+	*/
 
   return 0;
 }
