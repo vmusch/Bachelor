@@ -11,8 +11,6 @@
  * If c < 256, labeled arrow with character c to out.
  */
 
-int nstate{0}; //Anzahl aller States;
-
 enum
 {
 	Match = 256,
@@ -21,7 +19,6 @@ enum
 
 struct State
 {
-	int number_;
   int c_;
   State *out1_ = nullptr;
   State *out2_ = nullptr;
@@ -29,12 +26,9 @@ struct State
 };
 
 /* Allocate and initialize State */
-State* state(int c, State *out1, State *out2)
+State* state(const int& c, State *out1, State *out2)
 {
-  nstate++;
-
-  State *s = new State; //statt  s = malloc(sizeof *s)
-	s->number_ = nstate;
+  State *s = new State;
   s->c_ = c;
   s->out1_ = out1;
   s->out2_ = out2;
@@ -61,14 +55,14 @@ Frag frag(State *start, 	std::vector<State *> out)
   Frag n = { start, out };
   return n;
 }
-
+//makes one vektor only contains the pointer of the last state
 std::vector<State *> getVec(State *input)
 {
 	std::vector<State *> out{input};
 
 	return out;
 }
-
+// concats vec1 & vec2
 std::vector<State *> appendVec(const	std::vector<State *>& vec1, const std::vector<State *>& vec2)
 {
 	std::vector<State *> out = vec1;
@@ -78,13 +72,14 @@ std::vector<State *> appendVec(const	std::vector<State *>& vec1, const std::vect
 	}
 	return out;
 }
-
+// every state in "in" points with one pointer on "s"
 void patchVec(std::vector<State *>& in, State *s)
 {
 	for(auto e : in)
 	{
-		e->out1_ == nullptr ? e->out1_ = s : e->out2_ = s;
-		//e->out1_ = s;
+		//e->out1_ == nullptr ? e->out1_ = s : e->out2_ = s; //out1_ never nullptr
+		e->out1_ = s; 		//out1_ never nullptr //out1_ is 0 in z.128, 135, 142
+		//e->out2_ = s; komplement z.81
 	}
 }
 
@@ -93,21 +88,21 @@ void patchVec(std::vector<State *>& in, State *s)
  * Return start state.
  */
 
-State *matchstate = state(Match, nullptr, nullptr); // Zielzustand
-
 State* post2nfaE(const std::string& postfix)
 {
   std::stack<Frag> stack;
   Frag e,e1,e2;
   State *s;
-  if(postfix.empty()) return nullptr;
+
+	State *matchstate = state(Match, nullptr, nullptr);
+
+	if(postfix.empty()) return nullptr;
   for(uint i = 0; i < postfix.size(); i++)
   {
     char p = postfix[i];
     switch(p){
-      default:
+      default: //char
               s = state(p, nullptr, nullptr);
-              //stack.push(frag(s, list1(&s->out1_)));
 							stack.push(frag(s, getVec(s)));
               break;
       case '.':  //concat
@@ -125,43 +120,39 @@ State* post2nfaE(const std::string& postfix)
               e1 = stack.top();
               stack.pop();
               s = state(Split, e1.start, e2.start);
-              //stack.push(frag(s, append(e1.out, e2.out)));
 							stack.push(frag(s, appendVec(e1.out, e2.out)));
               break;
-      case '?': //0 oder 1 mal
+      case '?': //0 or 1
               e = stack.top();
               stack.pop();
-              s = state(Split, e.start, nullptr);
+              s = state(Split, nullptr, e.start);
 							stack.push(frag(s, appendVec(e.out, getVec(s))));
               //stack.push(frag(s, append(e.out, list1(&s->out2_))));
               break;
-      case '*': //kleene
+      case '*': //kleenestar
               e = stack.top();
               stack.pop();
-              s = state(Split, e.start, nullptr);
-              //patch(e.out, s);
+              s = state(Split, nullptr, e.start);
 							patchVec(e.out, s);
 							stack.push(frag(s, getVec(s)));
-              //stack.push(frag(s, append(e.out, list1(&s->out2_))));
               break;
-      case '+':
+      case '+': //one or more
               e = stack.top();
               stack.pop();
-              s = state(Split, e.start, nullptr);
+              s = state(Split, nullptr, e.start);
 							patchVec(e.out, s);
 							stack.push(frag(e.start, getVec(s)));
-              //patch(e.out, s);
-              //stack.push(frag(e.start, append(e.out, list1(&s->out2_))));
 							break;
     }
   }
   e = stack.top();
-	if(e.start == nullptr) std::cout<<"Fuck"<<"\n";
-	else std::cout<<"ok"<<"\n";
   stack.pop();
-
-  if(!stack.empty()) return nullptr;
-  patchVec(e.out, /*&*/ matchstate);
+  if(!stack.empty())
+ 	{
+		std::cerr<<"Somthing went wrong, regex not in postfix?"<<"\n";
+		return nullptr;
+	}
+	patchVec(e.out,  matchstate);
   return e.start;
 }
 
@@ -171,13 +162,12 @@ int main()
 	//std::vector<std::string> a ={"a","ab.","ab|","a*","a+","a?"};
 	State * startptr;
 	//b+c?(a|b)*b+
-	//std::string a = "b+c?.ab|*.b+.";
+	std::string a = "b+c?.ab|*.b+.";
 	//abc(cba)*abc
 	//std::string a = "ab.c.cb.a.*.ab.c..";
 	//a(b+|c+)d
-	std::string a = "ab+c+|.d.";
+	//std::string a = "ab+c+|.d.";
 	startptr = post2nfaE(a);
-	std::cout<<"ab"<<"\n";
 	/*
 	for(auto e : a)
 	{
