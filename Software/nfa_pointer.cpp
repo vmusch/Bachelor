@@ -156,6 +156,27 @@ State* post2nfaE(const std::string& postfix)
   return e.start;
 }
 
+std::string getRandomWord(State* startptr)
+{
+	std::string out{};
+	State* itptr = startptr;
+	int way = rand() % 2+1; // rand nr between 1-2;
+	while(itptr->c_ != Match)
+	{
+		if(itptr->c_ != Split)
+		{
+			out.push_back(itptr->c_);
+			itptr = itptr->out1_;
+		}
+		else
+		{
+			way == 1 ? itptr = itptr->out1_ : itptr = itptr->out2_;
+			way = rand() % 2+1;
+		}
+	}
+	return out;
+}
+
 int main()
 {
 
@@ -168,6 +189,13 @@ int main()
 	//a(b+|c+)d
 	//std::string a = "ab+c+|.d.";
 	startptr = post2nfaE(a);
+	std::vector<int> m;
+
+	for(int i = 0; i <= 10; i++)
+	{
+		std::string rndWord = getRandomWord(startptr);
+		std::cout<<rndWord<<"\n";
+	}
 	/*
 	for(auto e : a)
 	{
