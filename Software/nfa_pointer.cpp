@@ -3,14 +3,15 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <list>
+#include "nfa_pointer.h"
+
 /*
  * Represents an NFA state plus zero or one or two arrows exiting.
  * if c == Match, no arrows out; matching state.
  * If c == Split, unlabeled arrows to out and out1 (if != NULL).
  * If c < 256, labeled arrow with character c to out.
  */
-
+/*
 enum
 {
 	Match = 256,
@@ -24,8 +25,9 @@ struct State
   State *out2_ = nullptr;
   int lastlist_ = 0;
 };
+*/
+/* Allocate and initialize State*/
 
-/* Allocate and initialize State */
 State* state(const int& c, State *out1, State *out2)
 {
   State *s = new State;
@@ -44,12 +46,13 @@ State* state(const int& c, State *out1, State *out2)
  * Frag.out is a list of places that need to be set to the
  * next state for this fragment.
  */
+/*
 struct Frag
 {
   State *start;
 	std::vector<State *> out;
 };
-
+*/
 Frag frag(State *start, 	std::vector<State *> out)
 {
   Frag n = { start, out };
@@ -176,7 +179,7 @@ std::string getRandomWord(State* startptr)
 	}
 	return out;
 }
-
+/*
 int main()
 {
 
@@ -196,12 +199,13 @@ int main()
 		std::string rndWord = getRandomWord(startptr);
 		std::cout<<rndWord<<"\n";
 	}
-	/*
+
 	for(auto e : a)
 	{
 		startptr = post2nfaE(e);
 	}
-	*/
+
 
   return 0;
 }
+*/
