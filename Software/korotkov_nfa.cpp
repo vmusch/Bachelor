@@ -51,7 +51,7 @@ void oneStep(std::stack<keyState *>& stack, State* itptr, kState* kptr, std::str
 
 }
 
-std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
+std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
 {
   /*
   Phase 1:  Schlange befüllen mit keyStates
@@ -61,7 +61,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
   std::queue<keyState *> queue{};
   std::stack<keyState *> stack;
   keyState* k;
-  kState* e;
+  //kState* e;
   //---------------------------------------------------
   State *it_ptr = nfa_ptr;
   //kStade *it_ptr_k = kstade("",nullptr);
@@ -73,8 +73,9 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
   {
     k = stack.top();
     stack.pop();
-    if(k-> qGramFrag_.size() == q-1)
+    if(k-> qGramFrag_.size() == q-1 && k->positionNFA_->c_ != Split)
     {
+      std::cout<<k->qGramFrag_<<"\n";
       queue.push(k);
     }
     else
@@ -90,7 +91,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
     if(k->home_ == nullptr)
     {
       qGram = k->qGramFrag_;
-      qGram += k->
+      //qGram += k->
       //e = kstate()
     }
   }
@@ -101,14 +102,16 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
 int main()
 {
   State * startptr;
-  std::string a = "b+c?.ab|*.b+.";
+  std::string a = "ab+c+|.d.";
 
   startptr = post2nfaE(a);
-  std::vector<int> m;
+  std::vector<kState *> m;
+  m = nfa2knfa(startptr, 3);
   std::string rndWord;
-  for(int i = 0; i <= 10; i++)
+  /*for(int i = 0; i <= 10; i++)
   {
     rndWord = getRandomWord(startptr);
     std::cout<<rndWord<<"\n";
-  }
+  }*/
+
 }
