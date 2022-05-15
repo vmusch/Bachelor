@@ -6,12 +6,11 @@
 #include "nfa_pointer.h"
 #include "korotkov_nfa.h"
 
-kState* kstate(const std::string& qGram, std::vector<kState *> outs)
+kState* kstate(const std::string& qGram)
 {
   kState* ptr = new kState;
 
   ptr-> qGram_ = qGram;
-  ptr-> outs_ = outs;
 
   return ptr;
 }
@@ -61,7 +60,8 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   std::queue<keyState *> queue{};
   std::stack<keyState *> stack;
   keyState* k;
-  //kState* e;
+  kState* e;
+  State* l;
   //---------------------------------------------------
   State *it_ptr = nfa_ptr;
   //kStade *it_ptr_k = kstade("",nullptr);
@@ -84,16 +84,25 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
     }
   }
   //--------------------------------------
+  //Phase 2
   while(!queue.empty())
   {
     k = queue.front();
     queue.pop();
+    qGram = k->qGramFrag_;
+    qGram += k->positionNFA_->c_;
+    e = kstate(qGram);
     if(k->home_ == nullptr)
     {
-      qGram = k->qGramFrag_;
-      //qGram += k->
-      //e = kstate()
+      output.push_back(e);
     }
+    else
+    {
+      k->home_->outs_.push_back(e);
+    }
+    l = k->positionNFA_;
+    k = key(qGram.substr(1), l, e);
+    queue.push(k);
   }
 
   return output;

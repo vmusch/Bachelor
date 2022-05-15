@@ -9,7 +9,7 @@
 struct kState
 {
   std::string qGram_;
-  std::vector<kState *> outs_;
+  std::vector<kState *> outs_ = {};
 };
 
 
@@ -21,7 +21,7 @@ struct keyState
 };
 
 
-kState* kstate(const std::string& qGram, std::vector<kState *> outs);
+kState* kstate(const std::string& qGram);
 
 keyState* key(const std::string& qGramFrag, State *positionNFA_, kState * home);
 
