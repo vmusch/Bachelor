@@ -27,6 +27,8 @@ keyState* key(const std::string& qGramFrag, State *positionNFA_, kState * home);
 
 void oneStep(std::stack<keyState *>& stack, State* it_ptr, kState* kptr, std::string& qGram);
 
+void firstPhase(State *it_ptr, std::vector<keyState *>& output, const uint& q);
+
 std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q);
 
 #endif
