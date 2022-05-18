@@ -46,7 +46,7 @@ void oneStep(std::stack<keyState *>& stack, State* itptr, kState* kptr, std::str
         stack.push(e1);
         break;
     case Match:
-        std::cerr<<"qgram zu lang gewählt!"<<"\n";
+        throw int();
         break;
   }
 }
@@ -63,6 +63,11 @@ void firstPhase(State* it_ptr, std::vector<keyState *>& output, const uint& q)
   {
     k = stack.top();
     stack.pop();
+    if(k->positionNFA_->c_ == Match)
+    {
+      throw int();
+      //std::cerr<<"Q-Gram zu lang gewählt"<<"\n";
+    }
     if(k-> qGramFrag_.size() == q-1 && k->positionNFA_->c_ != Split)
     {
       //std::cout<<k->qGramFrag_<<"\n";
@@ -176,9 +181,14 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   std::string keyQgram;
   //---------------------------------------------------
   State *it_ptr = nfa_ptr;
-
-  firstPhase(it_ptr, queue, q);
-
+  try
+  {
+    firstPhase(it_ptr, queue, q);
+  }
+  catch(const int &Exception)
+  {
+    std::cerr<<"QGram zu lang gewählt"<<"\n";
+  }
   //Phase 2
   //erstellen der start states und umschreiben der pointer der keys
   std::string edge;
@@ -194,94 +204,12 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   }
 
   //--------------------------------------
-  //for(auto v : queue)
+
   for(uint i = 0; i < queue.size(); i++)
   {
+    std::cout<<queue[i]->qGramFrag_<<"\n";
     nextKeys(queue, queue[i], match);
   }
-
-
-
-
-//queue durchgehen, dabei neue q-1 gkeys erstelle und dazugehörigen Knoten oder wenn
-// es ihn gibt kante auf diesen
-/*
-for(auto v : queue)
-{
-  l = v->positionNFA_;
-  e = v->home_;
-  if(l->c_ == Split)
-  {
-    //out1
-    l1 = l->out1_;
-    keyQgram = e->qGram_.substr(1);
-    k1 = key(keyQgram, l1, e);
-    std::vector<keyState *>::iterator it;
-    it = find(queue.begin(), queue.end(), k1);
-    if(it != queue.end())// Schlüssel existiert bereits
-    {
-      e->outs_.push_back(*it->home_);
-    }
-    else
-    {
-      edge = keyQgram;
-      edge += l1->c_;
-      e1 = kstate(edge);
-      e.push_back(e1);
-      queue.push_back(k1);
-    }
-    //out2
-    l2 = l->out2_;
-    keyQgram = e->qGram_.substr(1);
-    k2 = key(keyQgram, l2, e);
-    std::vector<keyState *>::iterator it;
-    it = find(queue.begin(), queue.end(), k2);
-    if(it != queue.end())// Schlüssel existiert bereits
-    {
-      e->outs_.push_back(*it->home_);
-    }
-    else
-    {
-      edge = keyQgram;
-      edge += l2->c_;
-      e1 = kstate(edge);
-      e.push_back(e1);
-      queue.push_back(k1);
-    }
-
-
-
-  }
-  else if(l->c_ == Match)
-  {
-    e->outs_.push_back(match);
-  }
-  else
-  {
-
-  }
-}*/
-/*
-  while(!queue.empty())
-  {
-    k = queue.front();
-    queue.pop();
-    qGram = k->qGramFrag_;
-    qGram += k->positionNFA_->c_;
-    e = kstate(qGram);
-    if(k->home_ == nullptr)
-    {
-      output.push_back(e);
-    }
-    else
-    {
-      k->home_->outs_.push_back(e);
-    }
-    l = k->positionNFA_;
-    k = key(qGram.substr(1), l, e);
-    queue.push(k);
-  }
-*/
 
   return output;
 }
@@ -325,8 +253,12 @@ void print(const std::vector<kState *>& input)
 int main()
 {
   State * startptr;
-  std::string a = "ab+c+|.d.";
-
+  //b+c?(a|b)*b+
+  //std::string a = "b+c?.ab|*.b+.";
+  std::string a = "bb.bb..a+.b.";
+  //std::string a = "ab+c+|.d.";
+  //abc(cba)*abc
+	//std::string a = "ab.c.cb.a.*.ab.c..";
   startptr = post2nfaE(a);
   std::vector<kState *> m;
   m = nfa2knfa(startptr, 2);
