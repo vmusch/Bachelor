@@ -134,7 +134,11 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
   {
     k = stack.top();
     stack.pop();
-    if(k->qGramFrag_ == "$")
+    if(k->positionNFA_->c_== Match)
+    {
+      input->home_->outs_.push_back(match);
+    }
+    else if(k->qGramFrag_ == "$")
     {
       input->home_->outs_.push_back(match);
     }
@@ -208,6 +212,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   for(uint i = 0; i < queue.size(); i++)
   {
     std::cout<<queue[i]->qGramFrag_<<"\n";
+    //k = queue[i];
     nextKeys(queue, queue[i], match);
   }
 
@@ -229,10 +234,13 @@ void printState(kState *input)
 void print(const std::vector<kState *>& input)
 {
   std::stack<kState *> stack;
+  std::cout<<"Start: "<<"\n";
   for(uint i = 0; i < input.size(); i++)
   {
+    std::cout<<input[i]<<"\n";
     stack.push(input[i]);
   }
+  std::cout<<"#################"<<"\n";
   kState* k;
   while(!stack.empty())
   {
@@ -254,8 +262,8 @@ int main()
 {
   State * startptr;
   //b+c?(a|b)*b+
-  //std::string a = "b+c?.ab|*.b+.";
-  std::string a = "bb.bb..a+.b.";
+  std::string a = "b+c?.ab|*.b+.";
+  //std::string a = "bb.b.a+.";
   //std::string a = "ab+c+|.d.";
   //abc(cba)*abc
 	//std::string a = "ab.c.cb.a.*.ab.c..";
