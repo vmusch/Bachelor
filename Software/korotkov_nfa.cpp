@@ -93,15 +93,16 @@ int linSearch(const std::vector<keyState *>& liste, keyState* obj)
   return -1;
 }
 
-void nextStep(std::stack<keyState *>& stack, keyState* input)
+//void nextStep(std::stack<keyState *>& stack, keyState* input, State* itptr)
+void nextStep(std::stack<keyState *>& stack, keyState* input)//, State* itptr)
 {
   keyState *e1, *e2;
-  State* itptr = input->positionNFA_->out1_;
+  State* itptr = input->positionNFA_;
   int c = itptr->c_;
   switch(c)
   {
     default:
-        input->positionNFA_ = itptr;
+        //input->positionNFA_ = itptr->out1_;
         stack.push(input);
         break;
     case Split:
@@ -128,8 +129,9 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
   qGramFrag = qGramFrag.substr(1);
   std::string qGram = qGramFrag;
 
-  k = key(qGramFrag, input->positionNFA_, nullptr);
+  k = key(qGramFrag, input->positionNFA_->out1_, nullptr);
   nextStep(stack, k);
+  //nextStep(stack, k, input->positionNFA_->out1_);
   while(!stack.empty())
   {
     k = stack.top();
@@ -140,11 +142,12 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
     }
     else if(k->qGramFrag_ == "$")
     {
+      std::cout<<"HI"<<"\n";
       input->home_->outs_.push_back(match);
     }
     else if(k->positionNFA_->c_ == Split)
     {
-      nextStep(stack,k);
+      nextStep(stack, k);
     }
     else
     {
@@ -179,10 +182,8 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   std::vector<keyState *> queue{};
   kState* match = kstate("$");
 
-  kState* e,e1,e2;
-  State* l,l1,l2;
-  keyState* k,k1,k2;
-  std::string keyQgram;
+  kState* e;
+
   //---------------------------------------------------
   State *it_ptr = nfa_ptr;
   try
@@ -192,6 +193,10 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   catch(const int &Exception)
   {
     std::cerr<<"QGram zu lang gewählt"<<"\n";
+  }
+  for(auto v : queue)
+  {
+    std::cout<<v->qGramFrag_<<"   "<<v->positionNFA_<<"   "<<v->home_<<"\n";
   }
   //Phase 2
   //erstellen der start states und umschreiben der pointer der keys
@@ -203,7 +208,6 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
     edge += v->positionNFA_->c_;
     e = kstate(edge);
     v->home_ = e;
-    //  v->positionNFA_ = v->positionNFA_->out1_;
     output.push_back(e);
   }
 
@@ -211,8 +215,6 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
 
   for(uint i = 0; i < queue.size(); i++)
   {
-    std::cout<<queue[i]->qGramFrag_<<"\n";
-    //k = queue[i];
     nextKeys(queue, queue[i], match);
   }
 
@@ -262,15 +264,16 @@ int main()
 {
   State * startptr;
   //b+c?(a|b)*b+
-  std::string a = "b+c?.ab|*.b+.";
-  //std::string a = "bb.b.a+.";
+  //std::string a = "ab.e+.c.d.f.";
+  //std::string a = "bb.ab|*.b+.";
+  std::string a = "ab.c.d.e.f.g+.";
   //std::string a = "ab+c+|.d.";
   //abc(cba)*abc
-	//std::string a = "ab.c.cb.a.*.ab.c..";
+	//std::string a = "ab.c.d?.";
   startptr = post2nfaE(a);
   std::vector<kState *> m;
-  m = nfa2knfa(startptr, 2);
-  std::string rndWord;
+  m = nfa2knfa(startptr, 7);
+  //std::string rndWord;
   /*for(int i = 0; i <= 10; i++)
   {
     rndWord = getRandomWord(startptr);
@@ -280,5 +283,6 @@ int main()
   {
     std::cout<< e->qGram_<<"\n";
   }*/
+
   print(m);
 }
