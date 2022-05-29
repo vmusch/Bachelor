@@ -93,8 +93,7 @@ int linSearch(const std::vector<keyState *>& liste, keyState* obj)
   return -1;
 }
 
-//void nextStep(std::stack<keyState *>& stack, keyState* input, State* itptr)
-void nextStep(std::stack<keyState *>& stack, keyState* input)//, State* itptr)
+void nextStep(std::stack<keyState *>& stack, keyState* input)
 {
   keyState *e1, *e2;
   State* itptr = input->positionNFA_;
@@ -102,7 +101,6 @@ void nextStep(std::stack<keyState *>& stack, keyState* input)//, State* itptr)
   switch(c)
   {
     default:
-        //input->positionNFA_ = itptr->out1_;
         stack.push(input);
         break;
     case Split:
@@ -111,11 +109,9 @@ void nextStep(std::stack<keyState *>& stack, keyState* input)//, State* itptr)
         stack.push(e2);
         stack.push(e1);
         break;
-    case Match:
-        input->positionNFA_ = itptr;
-        input->qGramFrag_ = "$";
-        stack.push(input);
-        break;
+    /*case Match:
+        //std::cerr<<"Somthing went wrong"<<"\n";
+        break;*/
   }
 }
 
@@ -138,11 +134,6 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
     stack.pop();
     if(k->positionNFA_->c_== Match)
     {
-      input->home_->outs_.push_back(match);
-    }
-    else if(k->qGramFrag_ == "$")
-    {
-      std::cout<<"HI"<<"\n";
       input->home_->outs_.push_back(match);
     }
     else if(k->positionNFA_->c_ == Split)
@@ -194,10 +185,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   {
     std::cerr<<"QGram zu lang gewählt"<<"\n";
   }
-  for(auto v : queue)
-  {
-    std::cout<<v->qGramFrag_<<"   "<<v->positionNFA_<<"   "<<v->home_<<"\n";
-  }
+
   //Phase 2
   //erstellen der start states und umschreiben der pointer der keys
   std::string edge;
@@ -210,9 +198,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
     v->home_ = e;
     output.push_back(e);
   }
-
-  //--------------------------------------
-
+  //neue keys erstellen und in queue eintragen, sowie kstate erstellen und verknüpfen
   for(uint i = 0; i < queue.size(); i++)
   {
     nextKeys(queue, queue[i], match);
@@ -259,30 +245,24 @@ void print(const std::vector<kState *>& input)
     }
   }
 }
-
+/*
 int main()
 {
   State * startptr;
-  //b+c?(a|b)*b+
-  //std::string a = "ab.e+.c.d.f.";
+  //bb(a|b)*b+
   //std::string a = "bb.ab|*.b+.";
-  std::string a = "ab.c.d.e.f.g+.";
+  //std::string a = "ab.e+.c.d.f.";
+  //a(b+|c+)d
   //std::string a = "ab+c+|.d.";
-  //abc(cba)*abc
-	//std::string a = "ab.c.d?.";
+  //b+c?(a|b)*b+
+	std::string a = "b+c?.ad|*.e.f.g*.";
+	//abc(cba)*abc
+	//std::string a = "ab.c.cb.a.*.ab.c..";
   startptr = post2nfaE(a);
   std::vector<kState *> m;
-  m = nfa2knfa(startptr, 7);
+  m = nfa2knfa(startptr, 2);
   //std::string rndWord;
-  /*for(int i = 0; i <= 10; i++)
-  {
-    rndWord = getRandomWord(startptr);
-    std::cout<<rndWord<<"\n";
-  }
-  for(auto e : m)
-  {
-    std::cout<< e->qGram_<<"\n";
-  }*/
+
 
   print(m);
-}
+}*/
