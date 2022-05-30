@@ -195,6 +195,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
     edge = v->qGramFrag_;
     edge += v->positionNFA_->c_;
     e = kstate(edge);
+    e->start_ = 1;
     v->home_ = e;
     output.push_back(e);
   }

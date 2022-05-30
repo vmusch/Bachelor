@@ -3,6 +3,7 @@
 #include <string>
 #include <stack>
 #include "korotkov_nfa.h"
+#include "graphMaker.h"
 #include "nfa_pointer.h"
 
 int main()
@@ -15,6 +16,6 @@ int main()
   std::cin>>qlength;
   State* nfa = post2nfaE(regex);
   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
-  print(knfa);
+  print(knfa);//Graph(knfa,"test.dot");
   return 0;
 }

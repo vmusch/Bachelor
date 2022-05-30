@@ -11,6 +11,7 @@ struct kState
   std::string qGram_;
   std::vector<kState *> outs_ = {};
   int marked_ = 0;
+  bool start_ = 0;
 };
 
 
