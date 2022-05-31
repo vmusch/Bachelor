@@ -39,6 +39,4 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match);
 
 std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q);
 
-void print(const std::vector<kState *>& input);
-
 #endif

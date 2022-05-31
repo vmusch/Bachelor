@@ -16,6 +16,7 @@ int main()
   std::cin>>qlength;
   State* nfa = post2nfaE(regex);
   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
-  print(knfa);//Graph(knfa,"test.dot");
+  //print(knfa);
+  printGraph(knfa,"test.dot");
   return 0;
 }

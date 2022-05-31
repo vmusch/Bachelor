@@ -26,8 +26,6 @@ keyState* key(const std::string& qGramFrag, State *positionNFA, kState * home)
   return ptr;
 }
 
-
-
 void oneStep(std::stack<keyState *>& stack, State* itptr, kState* kptr, std::string& qGram)
 {
   keyState *e1, *e2;
@@ -114,7 +112,6 @@ void nextStep(std::stack<keyState *>& stack, keyState* input)
         break;*/
   }
 }
-
 
 void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
 {
@@ -208,62 +205,4 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   return output;
 }
 
-void printState(kState *input)
-{
-  std::cout<<"----------------------"<<"\n";
-  std::cout<<"ID: "<<input<<"\n";
-  std::cout<<"q-Gram: "<<input->qGram_<<"\n";
-  for(auto e : input->outs_)
-  {
-    std::cout<<e<<"\n";
-  }
-  std::cout<<"----------------------"<<"\n";
-}
-
-void print(const std::vector<kState *>& input)
-{
-  std::stack<kState *> stack;
-  std::cout<<"Start: "<<"\n";
-  for(uint i = 0; i < input.size(); i++)
-  {
-    std::cout<<input[i]<<"\n";
-    stack.push(input[i]);
-  }
-  std::cout<<"#################"<<"\n";
-  kState* k;
-  while(!stack.empty())
-  {
-    k = stack.top();
-    stack.pop();
-    if(k->marked_ == 0)
-    {
-      printState(k);
-      k->marked_ = 1;
-      for(auto v : k->outs_)
-      {
-        stack.push(v);
-      }
-    }
-  }
-}
-/*
-int main()
-{
-  State * startptr;
-  //bb(a|b)*b+
-  //std::string a = "bb.ab|*.b+.";
-  //std::string a = "ab.e+.c.d.f.";
-  //a(b+|c+)d
-  //std::string a = "ab+c+|.d.";
-  //b+c?(a|b)*b+
-	std::string a = "b+c?.ad|*.e.f.g*.";
-	//abc(cba)*abc
-	//std::string a = "ab.c.cb.a.*.ab.c..";
-  startptr = post2nfaE(a);
-  std::vector<kState *> m;
-  m = nfa2knfa(startptr, 2);
-  //std::string rndWord;
-
-
-  print(m);
-}*/
+//std::vector<std::vector<std::string>> getMatrix(std::vector<kState* >)

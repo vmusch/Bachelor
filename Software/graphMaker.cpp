@@ -1,26 +1,83 @@
 #include <stack>
 #include <fstream>
+#include <sstream>
 #include <vector>
+#include <iostream>
 #include "korotkov_nfa.h"
 #include "graphMaker.h"
 
+void printState(kState *input)
+{
+  std::cout<<"----------------------"<<"\n";
+  std::cout<<"ID: "<<input<<"\n";
+  std::cout<<"q-Gram: "<<input->qGram_<<"\n";
+  for(auto e : input->outs_)
+  {
+    std::cout<<e<<"\n";
+  }
+  std::cout<<"----------------------"<<"\n";
+}
+
+void print(const std::vector<kState *>& input)
+{
+  std::stack<kState *> stack;
+  std::cout<<"Start: "<<"\n";
+  for(uint i = 0; i < input.size(); i++)
+  {
+    std::cout<<input[i]<<"\n";
+    stack.push(input[i]);
+  }
+  std::cout<<"#################"<<"\n";
+  kState* k;
+  while(!stack.empty())
+  {
+    k = stack.top();
+    stack.pop();
+    if(k->marked_ == 0)
+    {
+      printState(k);
+      k->marked_ = 1;
+      for(auto v : k->outs_)
+      {
+        stack.push(v);
+      }
+    }
+  }
+}
 
 std::string printNode(kState *input)
 {
+  std::stringstream inputS;
+  inputS << input;
   std::string line = "\"";
-  line += input->qGram_;
-  line += "\"->{";
-  if(input->qGram_ != "$")
+  line += inputS.str();
+  if(input->start_)
   {
-    for(auto e : input->outs_)
-    {
-      line += "\"";
-      line += e->qGram_;
-      line += "\" ";
-    }
+    line+= "\" [style=filled fillcolor=red label=\"";
+  }
+  else if(input->qGram_ == "$")
+  {
+    line+= "\" [shape=doublecircle label=\"";
+  }
+  else
+  {
+    line += "\" [label=\"";
+  }
+
+  line += input->qGram_;
+  line += "\"]\n\"";
+  line += inputS.str();
+  line += "\"->{";
+  for(auto e : input->outs_)
+  {
+    std::stringstream s;
+    s << e;
+    line += "\"";
+    line += s.str();
+    line += "\" ";
+
   }
   line += "}";
-  if(input->start_) line += " ";
   return line;
 }
 
@@ -30,8 +87,8 @@ void printGraph(const std::vector<kState *>& input, const std::string& filename)
   f.open(filename, std::ios::out);
   f << "digraph graphname"<<"\n";
   f << "{"<<"\n";
-  f << "{"<<"\n";
-  f << "\"$\" [shape=doublecircle]"<<"\n";
+  //f << "{"<<"\n";
+  //f << "\"$\" [shape=doublecircle]"<<"\n";
 
   std::string newline;
   std::stack<kState *> stack;
@@ -39,13 +96,13 @@ void printGraph(const std::vector<kState *>& input, const std::string& filename)
   {
     //std::cout<<input[i]<<"\n";
     stack.push(input[i]);
-    newline = "\"";
-    newline += input[i]->qGram_;
-    newline += "\" [style=filled fillcolor = red]";
-    f << newline << "\n";
+    //newline = "\"";
+    //newline += input[i];
+    //newline += "\" [style=filled fillcolor=red ";
+    //newline +="]"
+    //f << newline << "\n";
   }
-    f << "}"<<"\n";
-  //std::cout<<"#################"<<"\n";
+    //f << "}"<<"\n";
   kState* k;
   while(!stack.empty())
   {
