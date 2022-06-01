@@ -19,4 +19,5 @@ int main()
   //print(knfa);
   printGraph(knfa,"test.dot");
   return 0;
+  //at.g.at|gc||at|gc|||at|gc|||.ta.g.tg.a.|ta.a.|.
 }
