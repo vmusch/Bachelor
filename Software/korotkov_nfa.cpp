@@ -1,8 +1,9 @@
+#include <algorithm>
 #include <iostream>
-#include <vector>
-#include <stack>
 #include <queue>
+#include <stack>
 #include <string>
+#include <vector>
 #include "nfa_pointer.h"
 #include "korotkov_nfa.h"
 
@@ -205,29 +206,57 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   return output;
 }
 
-// std::vector<std::vector<std::string>> getMatrix(std::vector<kState* >)
-// {
-//   std::vector<std::vector<std::string>> matrix{};
-//
-//   std::stack<kState *> stack;
-//   for(uint i = 0; i < input.size(); i++)
-//   {
-//     stack.push(input[i]);
-//   }
-//   kState* k;
-//   while(!stack.empty())
-//   {
-//     k = stack.top();
-//     stack.pop();
-//     if(k->marked_ == 0)
-//     {
-//       newline = printNode(k);
-//       f << newline <<"\n";
-//       k->marked_ = 1;
-//       for(auto v : k->outs_)
-//       {
-//         stack.push(v);
-//       }
-//     }
-//   }
-// }
+Path path(std::vector<kState* > qPath,  kState* position) 
+{
+  Path p;
+  p.qPath_ = qPath;
+  p.position_ = position;
+  return p;
+}
+
+std::vector<std::string> makeLine(std::vector<kState* > qPath)
+{
+  std::vector<std::string> line{};
+  std::string s;
+  for(auto e : qPath)
+  {
+    s = e->qGram_;
+    line.push_back(s);
+  }
+  std::sort(line.begin(), line.end());
+  return line;
+
+}
+
+std::vector<std::vector<std::string>> getMatrix(std::vector<kState* > input)
+{
+  std::vector<std::vector<std::string>> matrix{};
+
+  std::stack<Path> stack;
+  for(uint i = 0; i < input.size(); i++)
+  {
+    std::vector<kState* > vec{input[i]};
+    stack.push(path(vec, input[i]));
+  }
+  Path p;
+  while(!stack.empty())
+  {
+    p = stack.top();
+    stack.pop();
+    for(auto e : p.position_->outs_)
+    {
+      if(e->qGram_ == "$")
+      {
+        std::vector<std::string> line = makeLine(p.qPath_);
+        matrix.push_back(line);
+      }
+      else if(std::find(p.qPath_.begin(), p.qPath_.end(), e) == p.qPath_.end())
+      {
+        std::vector<kState* > vec = p.qPath_;
+        vec.push_back(e);
+        stack.push(path(vec, e));
+      }
+    }
+  }
+  return matrix;
+}

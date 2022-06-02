@@ -14,7 +14,6 @@ struct kState
   bool start_ = 0;
 };
 
-
 struct keyState
 {
     std::string qGramFrag_;
@@ -22,10 +21,17 @@ struct keyState
     kState * home_ = nullptr;
 };
 
+struct Path
+{
+  std::vector<kState* > qPath_;
+  kState* position_;
+};
 
 kState* kstate(const std::string& qGram);
 
 keyState* key(const std::string& qGramFrag, State *positionNFA_, kState * home);
+
+Path path(std::vector<kState* > qPath,  kState* position);
 
 void oneStep(std::stack<keyState *>& stack, State* it_ptr, kState* kptr, std::string& qGram);
 
@@ -38,5 +44,7 @@ void nextStep(std::stack<keyState *>& stack, keyState* input);
 void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match);
 
 std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q);
+
+std::vector<std::vector<std::string>> getMatrix(std::vector<kState* > input);
 
 #endif
