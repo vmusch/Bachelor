@@ -205,4 +205,29 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   return output;
 }
 
-//std::vector<std::vector<std::string>> getMatrix(std::vector<kState* >)
+// std::vector<std::vector<std::string>> getMatrix(std::vector<kState* >)
+// {
+//   std::vector<std::vector<std::string>> matrix{};
+//
+//   std::stack<kState *> stack;
+//   for(uint i = 0; i < input.size(); i++)
+//   {
+//     stack.push(input[i]);
+//   }
+//   kState* k;
+//   while(!stack.empty())
+//   {
+//     k = stack.top();
+//     stack.pop();
+//     if(k->marked_ == 0)
+//     {
+//       newline = printNode(k);
+//       f << newline <<"\n";
+//       k->marked_ = 1;
+//       for(auto v : k->outs_)
+//       {
+//         stack.push(v);
+//       }
+//     }
+//   }
+// }

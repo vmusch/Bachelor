@@ -17,7 +17,7 @@ int main()
   State* nfa = post2nfaE(regex);
   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
   //print(knfa);
-  printGraph(knfa,"test.dot");
+  printGraph(knfa,"out.dot");
   return 0;
   //at.g.at|gc||at|gc|||at|gc|||.ta.g.tg.a.|ta.a.|.
 }
