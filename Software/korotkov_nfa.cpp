@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iostream>
 #include <queue>
+#include <set>
 #include <stack>
 #include <string>
 #include <vector>
@@ -214,23 +215,23 @@ Path path(std::vector<kState* > qPath,  kState* position)
   return p;
 }
 
-std::vector<std::string> makeLine(std::vector<kState* > qPath)
+std::set<std::string> makeLine(std::vector<kState* > qPath)
 {
-  std::vector<std::string> line{};
+  std::set<std::string> line{};
   std::string s;
   for(auto e : qPath)
   {
     s = e->qGram_;
-    line.push_back(s);
+    line.insert(s);
   }
-  std::sort(line.begin(), line.end());
+  //std::sort(line.begin(), line.end());
   return line;
 
 }
 
-std::vector<std::vector<std::string>> getMatrix(std::vector<kState* > input)
+std::set<std::set<std::string>> getMatrix(std::vector<kState* > input)
 {
-  std::vector<std::vector<std::string>> matrix{};
+  std::set<std::set<std::string>> matrix{};
 
   std::stack<Path> stack;
   for(uint i = 0; i < input.size(); i++)
@@ -247,8 +248,8 @@ std::vector<std::vector<std::string>> getMatrix(std::vector<kState* > input)
     {
       if(e->qGram_ == "$")
       {
-        std::vector<std::string> line = makeLine(p.qPath_);
-        matrix.push_back(line);
+        std::set<std::string> line = makeLine(p.qPath_);
+        matrix.insert(line);
       }
       else if(std::find(p.qPath_.begin(), p.qPath_.end(), e) == p.qPath_.end())
       {

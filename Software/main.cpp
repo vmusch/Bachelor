@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <set>
 #include <string>
 #include <stack>
 #include "korotkov_nfa.h"
@@ -17,7 +18,7 @@ int main()
   State* nfa = post2nfaE(regex);
   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
   //print(knfa);
-  std::vector<std::vector<std::string>> matrix = getMatrix(knfa);
+  std::set<std::set<std::string>> matrix = getMatrix(knfa);
   for(auto i : matrix)
   {
     for(auto j : i)
@@ -26,7 +27,8 @@ int main()
     }
     std::cout<<"\n";
   }
-  //printGraph(knfa,"out.dot");
+  printGraph(knfa,"out.dot");
   return 0;
   //at.g.    at| gc| |    at| gc| | |    at| gc| |   |.  ta.g.tg.a.|ta.a.|.
 }
+// at.g.at|gc||at|gc|||at|gc|||*.ta.g.tg.a.|ta.a.|.

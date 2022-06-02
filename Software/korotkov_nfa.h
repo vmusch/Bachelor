@@ -1,6 +1,8 @@
 #ifndef KOROTKOV_NFA_H
 #define KOROTKOV_NFA_H
 
+
+#include <set>
 #include <string>
 #include <vector>
 #include "nfa_pointer.h"
@@ -45,6 +47,6 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match);
 
 std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q);
 
-std::vector<std::vector<std::string>> getMatrix(std::vector<kState* > input);
+std::set<std::set<std::string>> getMatrix(std::vector<kState* > input);
 
 #endif
