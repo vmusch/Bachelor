@@ -207,7 +207,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   return output;
 }
 
-Path path(std::vector<kState* > qPath,  kState* position) 
+Path path(std::vector<kState* > qPath, kState* position)
 {
   Path p;
   p.qPath_ = qPath;
