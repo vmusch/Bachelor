@@ -93,6 +93,18 @@ int linSearch(const std::vector<keyState *>& liste, keyState* obj)
   return -1;
 }
 
+int linSearch2(const std::vector<kState *>& liste, kState* obj)
+{
+  for(uint i = 0; i<liste.size(); i++)
+  {
+    if(liste[i]->qGram_ == obj->qGram_)
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
 void nextStep(std::stack<keyState *>& stack, keyState* input)
 {
   keyState *e1, *e2;
@@ -109,13 +121,10 @@ void nextStep(std::stack<keyState *>& stack, keyState* input)
         stack.push(e2);
         stack.push(e1);
         break;
-    /*case Match:
-        //std::cerr<<"Somthing went wrong"<<"\n";
-        break;*/
   }
 }
 
-void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
+void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match, std::vector<kState *>& nodes)
 {
   std::stack<keyState *> stack;
   keyState* k;
@@ -146,10 +155,26 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
       {
         qGram += k->positionNFA_->c_;
         e = kstate(qGram);
-        input->home_->outs_.push_back(e);
-        k->home_ = e;
-        liste.push_back(k);
-        qGram = qGramFrag;
+        int j = linSearch2(nodes, e);
+          // input->home_->outs_.push_back(e);
+          // k->home_ = e;
+          // liste.push_back(k);
+          // qGram = qGramFrag;
+        if(j == -1)
+        {
+          nodes.push_back(e);
+          input->home_->outs_.push_back(e);
+          k->home_ = e;
+          liste.push_back(k);
+          qGram = qGramFrag;
+        }
+        else
+        {
+          input->home_->outs_.push_back(nodes[j]);
+          k->home_ = nodes[j];
+          liste.push_back(k);
+          qGram = qGramFrag;
+        }
       }
       else
       {
@@ -169,6 +194,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
             zuerst alle vom start durchgehen, mittels stack;
   */
   std::vector<kState *> output{}; //fungiert als start
+  std::vector<kState *> nodes{}; //liste aller Knoten
   std::vector<keyState *> queue{};
   kState* match = kstate("$");
 
@@ -198,12 +224,22 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
     v->home_ = e;
     output.push_back(e);
   }
+  for(auto e : queue)
+  {
+    std::cout<< e->qGramFrag_;
+    std::cout<<"\n";
+  }
+  nodes = output;
   //neue keys erstellen und in queue eintragen, sowie kstate erstellen und verknüpfen
   for(uint i = 0; i < queue.size(); i++)
   {
-    nextKeys(queue, queue[i], match);
+    nextKeys(queue, queue[i], match, nodes);
   }
-
+  for(auto e : nodes)
+  {
+    std::cout<< e->qGram_<<" ";
+  }
+  std::cout<<"\n";
   return output;
 }
 
@@ -224,7 +260,7 @@ std::set<std::string> makeLine(std::vector<kState* > qPath)
     s = e->qGram_;
     line.insert(s);
   }
-  //std::sort(line.begin(), line.end());
+
   return line;
 
 }
@@ -261,3 +297,21 @@ std::set<std::set<std::string>> getMatrix(std::vector<kState* > input)
   }
   return matrix;
 }
+
+// int main()
+// {
+//   std::string regex = "bb.ba|*.b+.";
+//   int qlength = 3;
+//   State* nfa = post2nfaE(regex);
+//   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
+//
+//   std::set<std::set<std::string>> matrix = getMatrix(knfa);
+//   for(auto i : matrix)
+//   {
+//     for(auto j : i)
+//     {
+//       std::cout<<j<<" ";
+//     }
+//     std::cout<<"\n";
+//   }
+// }
