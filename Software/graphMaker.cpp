@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <stack>
 #include <fstream>
 #include <sstream>
@@ -87,22 +88,13 @@ void printGraph(const std::vector<kState *>& input, const std::string& filename)
   f.open(filename, std::ios::out);
   f << "digraph graphname"<<"\n";
   f << "{"<<"\n";
-  //f << "{"<<"\n";
-  //f << "\"$\" [shape=doublecircle]"<<"\n";
 
   std::string newline;
   std::stack<kState *> stack;
   for(uint i = 0; i < input.size(); i++)
   {
-    //std::cout<<input[i]<<"\n";
     stack.push(input[i]);
-    //newline = "\"";
-    //newline += input[i];
-    //newline += "\" [style=filled fillcolor=red ";
-    //newline +="]"
-    //f << newline << "\n";
   }
-    //f << "}"<<"\n";
   kState* k;
   while(!stack.empty())
   {
@@ -121,4 +113,17 @@ void printGraph(const std::vector<kState *>& input, const std::string& filename)
   }
   f << "}";
   f.close();
+}
+
+void uMatrix(std::vector<std::vector<std::string>>& matrix)
+{
+  for(uint i = 0; i < matrix.size(); ++i)
+  {
+    std::sort(matrix[i].begin(), matrix[i].end());
+    auto last = std::unique(matrix[i].begin(), matrix[i].end());
+    matrix[i].erase(last, matrix[i].end());
+  }
+  std::sort(matrix.begin(), matrix.end());
+  auto last = std::unique(matrix.begin(), matrix.end());
+  matrix.erase(last, matrix.end());
 }

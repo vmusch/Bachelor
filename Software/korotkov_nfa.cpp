@@ -7,6 +7,7 @@
 #include <vector>
 #include "nfa_pointer.h"
 #include "korotkov_nfa.h"
+#include "graphMaker.h"
 
 kState* kstate(const std::string& qGram)
 {
@@ -207,57 +208,126 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   return output;
 }
 
-Path path(std::vector<kState* > qPath, kState* position)
+Path* path(kState* position)
 {
-  Path p;
-  p.qPath_ = qPath;
-  p.position_ = position;
+  Path* p = new Path;
+  p->qPath_ = 0;
+  p->position_ = position;
   return p;
 }
 
-std::set<std::string> makeLine(std::vector<kState* > qPath)
+void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
 {
-  std::set<std::string> line{};
-  std::string s;
-  for(auto e : qPath)
-  {
-    s = e->qGram_;
-    line.insert(s);
-  }
-  //std::sort(line.begin(), line.end());
-  return line;
+  std::vector<std::string> line{};
+  std::stack<Path*> stack{};
 
-}
+  Path* p = path(input);
+  stack.push(p);
 
-std::set<std::set<std::string>> getMatrix(std::vector<kState* > input)
-{
-  std::set<std::set<std::string>> matrix{};
-
-  std::stack<Path> stack;
-  for(uint i = 0; i < input.size(); i++)
-  {
-    std::vector<kState* > vec{input[i]};
-    stack.push(path(vec, input[i]));
-  }
-  Path p;
   while(!stack.empty())
   {
     p = stack.top();
-    stack.pop();
-    for(auto e : p.position_->outs_)
+    //std::cout<<p->position_->qGram_<<"\n";
+    if(p->position_->marked_ == 0)
     {
-      if(e->qGram_ == "$")
+      line.push_back(p->position_->qGram_);
+      p->position_->marked_ = 1;
+    }
+    if(p->qPath_ < p->position_->outs_.size())
+    {
+      if(p->position_->outs_[p->qPath_]->qGram_ == "$")
       {
-        std::set<std::string> line = makeLine(p.qPath_);
-        matrix.insert(line);
+        matrix.push_back(line);
+        p->qPath_++;
       }
-      else if(std::find(p.qPath_.begin(), p.qPath_.end(), e) == p.qPath_.end())
+      else
       {
-        std::vector<kState* > vec = p.qPath_;
-        vec.push_back(e);
-        stack.push(path(vec, e));
+        if(p->position_->outs_[p->qPath_]->marked_ == 0)
+        {
+          stack.push(path(p->position_->outs_[p->qPath_]));
+        }
+        p->qPath_++;
       }
     }
+    else
+    {
+      line.pop_back();
+      p->position_->marked_ = 0;
+      stack.pop();
+      delete p;
+    }
   }
-  return matrix;
 }
+//
+// int main()
+// {
+//
+//   std::string regex = "ab+c+|.d.";
+//   int qlength = 3;
+//   State* nfa = post2nfaE(regex);
+//   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
+//   std::vector<std::vector<std::string>> matrix{};
+//   for(auto i : knfa)
+//   {
+//     dfs(i,matrix);
+//   }
+//
+//   for(auto i : matrix)
+//   {
+//     for(auto j : i)
+//     {
+//       std::cout<<j<<" ";
+//     }
+//     std::cout<<"\n";
+//   }
+//   printGraph(knfa,"out.dot");
+//   return 0;
+// }
+
+
+// std::set<std::string> makeLine(std::vector<kState* > qPath)
+// {
+//   std::set<std::string> line{};
+//   std::string s;
+//   for(auto e : qPath)
+//   {
+//     s = e->qGram_;
+//     line.insert(s);
+//   }
+//   //std::sort(line.begin(), line.end());
+//   return line;
+//
+// }
+//
+// std::set<std::set<std::string>> getMatrix(std::vector<kState* > input)
+// {
+//   std::set<std::set<std::string>> matrix{};
+//
+//   std::stack<Path> stack;
+//   for(uint i = 0; i < input.size(); i++)
+//   {
+//     std::vector<kState* > vec{input[i]};
+//     stack.push(path(vec, input[i]));
+//   }
+//   Path p;
+//   while(!stack.empty())
+//   {
+//     p = stack.top();
+//     stack.pop();
+//     for(auto e : p.position_->outs_)
+//     {
+//       if(e->qGram_ == "$")
+//       {
+//         std::set<std::string> line = makeLine(p.qPath_);
+//         matrix.insert(line);
+//       }
+//       else if(std::find(p.qPath_.begin(), p.qPath_.end(), e) == p.qPath_.end())
+//       {
+//         std::vector<kState* > vec = p.qPath_;
+//         vec.push_back(e);
+//         stack.push(path(vec, e));
+//       }
+//     }
+//   }
+//   return matrix;
+// }

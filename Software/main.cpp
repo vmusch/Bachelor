@@ -18,7 +18,13 @@ int main()
   State* nfa = post2nfaE(regex);
   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
   //print(knfa);
-  std::set<std::set<std::string>> matrix = getMatrix(knfa);
+  std::vector<std::vector<std::string>> matrix{};
+  //std::set<std::set<std::string>> matrix = getMatrix(knfa);
+  for(auto i : knfa)
+  {
+    dfs(i,matrix);
+  }
+  uMatrix(matrix);
   for(auto i : matrix)
   {
     for(auto j : i)
