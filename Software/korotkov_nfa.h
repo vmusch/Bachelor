@@ -29,9 +29,15 @@ struct Path
   kState* position_;
 };
 
+std::vector<char> getAlphabet(const std::string& regex);
+
+uint shiftValue(const uint& input);
+
+uint32_t getHash(const std::vector<char>& alphabet, const std::string& input, const uint& sValue);
+
 kState* kstate(const std::string& qGram);
 
-keyState* key(const std::string& qGramFrag, State *positionNFA_, kState * home);
+keyState* key(const std::string& qGramFrag, State* positionNFA_, kState* home);
 
 Path* path(kState* position);
 

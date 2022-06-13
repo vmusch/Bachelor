@@ -11,21 +11,7 @@
  * If c == Split, unlabeled arrows to out and out1 (if != NULL).
  * If c < 256, labeled arrow with character c to out.
  */
-/*
-enum
-{
-	Match = 256,
-	Split = 257
-};
 
-struct State
-{
-  int c_;
-  State *out1_ = nullptr;
-  State *out2_ = nullptr;
-  int lastlist_ = 0;
-};
-*/
 /* Allocate and initialize State*/
 
 State* state(const int& c, State *out1, State *out2)
