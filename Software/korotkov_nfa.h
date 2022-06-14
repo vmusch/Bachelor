@@ -18,9 +18,9 @@ struct kState
 
 struct keyState
 {
-    std::string qGramFrag_;
-    State *positionNFA_= nullptr;
-    kState * home_ = nullptr;
+  std::string qGramFrag_;
+  State *positionNFA_= nullptr;
+  kState *home_ = nullptr;
 };
 
 struct Path
