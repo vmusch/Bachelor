@@ -177,7 +177,7 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
 
   k = key(qGramFrag, input->positionNFA_->out1_, nullptr);
   nextStep(stack, k);
-  //nextStep(stack, k, input->positionNFA_->out1_);
+ 
   while(!stack.empty())
   {
     k = stack.top();
@@ -206,6 +206,7 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
       {
         k = liste[i];
         input->home_->outs_.push_back(k->home_);
+        delete k;
       }
     }
   }
@@ -277,7 +278,7 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
   while(!stack.empty())
   {
     p = stack.top();
-    //std::cout<<p->position_->qGram_<<"\n";
+    
     if(p->position_->marked_ == 0)
     {
       line.push_back(p->position_->qGram_);
@@ -308,10 +309,10 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
     }
   }
 }
-//
+
 // int main()
 // {
-//
+
 //   std::string regex = "ab+c+|.d.";
 //   int qlength = 3;
 //   State* nfa = post2nfaE(regex);
@@ -321,7 +322,7 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
 //   {
 //     dfs(i,matrix);
 //   }
-//
+
 //   for(auto i : matrix)
 //   {
 //     for(auto j : i)
@@ -346,13 +347,13 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
 //   }
 //   //std::sort(line.begin(), line.end());
 //   return line;
-//
+
 // }
-//
+
 // std::set<std::set<std::string>> getMatrix(std::vector<kState* > input)
 // {
 //   std::set<std::set<std::string>> matrix{};
-//
+
 //   std::stack<Path> stack;
 //   for(uint i = 0; i < input.size(); i++)
 //   {

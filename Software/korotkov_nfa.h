@@ -18,15 +18,17 @@ struct kState
 
 struct keyState
 {
-  std::string qGramFrag_;
+  std::string qGramFrag_{};
   State *positionNFA_= nullptr;
   kState *home_ = nullptr;
+  ~keyState(){}
 };
 
 struct Path
 {
   uint16_t qPath_;
   kState* position_;
+  ~Path(){};
 };
 
 std::vector<char> getAlphabet(const std::string& regex);

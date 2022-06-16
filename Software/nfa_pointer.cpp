@@ -185,38 +185,39 @@ void deleteGraph(State* startptr)
 	add(a, startptr);
 	std::sort(a.begin(), a.end());
  	auto last = std::unique(a.begin(), a.end());
+	a.erase(last, a.end());
 	for(auto e : a)
 	{
 		delete e;
 	}
 }
 
-int main()
-{
+// int main()
+// {
 
-	//std::vector<std::string> a ={"a","ab.","ab|","a*","a+","a?"};
-	State * startptr;
-	//b+c?(a|b)*b+
-	//std::string a = "b+c?.ab|*.b+.";
-	//abc(cba)*abc
-	//std::string a = "ab.c.cb.a.*.ab.c..";
-	//a(b+|c+)d
-	std::string a = "ab+c+|.d.";
-	startptr = post2nfaE(a);
-	std::vector<int> m;
+// 	//std::vector<std::string> a ={"a","ab.","ab|","a*","a+","a?"};
+// 	State * startptr;
+// 	//b+c?(a|b)*b+
+// 	//std::string a = "b+c?.ab|*.b+.";
+// 	//abc(cba)*abc
+// 	//std::string a = "ab.c.cb.a.*.ab.c..";
+// 	//a(b+|c+)d
+// 	std::string a = "ab+c+|.d.";
+// 	startptr = post2nfaE(a);
+// 	std::vector<int> m;
 
-	for(int i = 0; i <= 10; i++)
-	{
-		std::string rndWord = getRandomWord(startptr);
-		std::cout<<rndWord<<"\n";
-	}
+// 	for(int i = 0; i <= 10; i++)
+// 	{
+// 		std::string rndWord = getRandomWord(startptr);
+// 		std::cout<<rndWord<<"\n";
+// 	}
 
-	// for(auto e : a)
-	// {
-	// 	startptr = post2nfaE(e);
-	// }
-	deleteGraph(startptr);
+// 	// for(auto e : a)
+// 	// {
+// 	// 	startptr = post2nfaE(e);
+// 	// }
+// 	deleteGraph(startptr);
 
-  return 0;
-}
+//   return 0;
+// }
 
