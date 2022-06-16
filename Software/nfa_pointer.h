@@ -17,19 +17,11 @@ struct State
   State *out1_ = nullptr;
   State *out2_ = nullptr;
   int lastlist_ = 0;
+  ~State() {}
 };
 
-State* state(const int& c, State *out1, State *out2);/*
-{
-  State *s = new State;
-  s->c_ = c;
-  s->out1_ = out1;
-  s->out2_ = out2;
-  s->lastlist_ = 0;
+State* state(const int& c, State *out1, State *out2);
 
-  return s;
-}
-*/
 struct Frag
 {
   State *start;
@@ -52,4 +44,5 @@ State* post2nfaE(const std::string& postfix);
 
 std::string getRandomWord(State* startptr);
 
+void deleteGraph(State* startptr);
 #endif

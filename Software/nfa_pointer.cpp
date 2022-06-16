@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "nfa_pointer.h"
 
 /*
@@ -165,18 +166,42 @@ std::string getRandomWord(State* startptr)
 	}
 	return out;
 }
-/*
+
+void add(std::vector<State* >& a, State* b)
+{
+	if(b->c_ != -1)
+	{
+		a.push_back(b);
+		b->c_ = -1;
+		if(b->out1_ != nullptr)
+			add(a, b->out1_);
+		if(b->out2_ != nullptr)
+			add(a, b->out2_);
+	}
+}
+void deleteGraph(State* startptr)
+{
+	std::vector<State* > a{};
+	add(a, startptr);
+	std::sort(a.begin(), a.end());
+ 	auto last = std::unique(a.begin(), a.end());
+	for(auto e : a)
+	{
+		delete e;
+	}
+}
+
 int main()
 {
 
 	//std::vector<std::string> a ={"a","ab.","ab|","a*","a+","a?"};
 	State * startptr;
 	//b+c?(a|b)*b+
-	std::string a = "b+c?.ab|*.b+.";
+	//std::string a = "b+c?.ab|*.b+.";
 	//abc(cba)*abc
 	//std::string a = "ab.c.cb.a.*.ab.c..";
 	//a(b+|c+)d
-	//std::string a = "ab+c+|.d.";
+	std::string a = "ab+c+|.d.";
 	startptr = post2nfaE(a);
 	std::vector<int> m;
 
@@ -186,12 +211,12 @@ int main()
 		std::cout<<rndWord<<"\n";
 	}
 
-	for(auto e : a)
-	{
-		startptr = post2nfaE(e);
-	}
-
+	// for(auto e : a)
+	// {
+	// 	startptr = post2nfaE(e);
+	// }
+	deleteGraph(startptr);
 
   return 0;
 }
-*/
+
