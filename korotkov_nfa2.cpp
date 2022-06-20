@@ -27,9 +27,22 @@ void oneStep(std::stack<korotkovState *>& stack, State* itptr,
   switch(c)
   {
     default:
-
+        qGram += c;
+        e1 = KortkovState(key(qGram, itptr->out1_, kptr));
+        stack.push(e1);
+        break;
+    case Split:
+        e1 = KortkovState(key(qGram, itptr->out1_, kptr));
+        e2 = KortkovState(key(qGram, itptr->out2_, kptr));
+        stack.push(e2);
+        stack.push(e1);
+        break;
+    case Match:
+        throw int();
+        break;
   }
 }
+
 void makeStart(State* it_ptr, std::vector<korotkovState* >& queue,
                 std::vector<korotkovState* >& outs, const uint& q)
 {

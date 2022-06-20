@@ -10,7 +10,7 @@ CXXFLAGS = -std=c++17 -Wall -Werror -Wextra -pedantic -O2 -D_GLIBCXX_ASSERTIONS 
 	${CXX} ${CXXFLAGS} -I . -c $*.cpp
 
 
-main: nfa_pointer.o korotkov_nfa.o graphMaker.o main.cpp
+main: nfa_pointer.o korotkov_nfa.o graphMaker.o utils.o main.cpp
 	${CXX} ${CXXFLAGS} -I . $^ -o main
 
 clear:

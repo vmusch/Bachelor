@@ -10,54 +10,7 @@
 #include "korotkov_nfa.h"
 #include "graphMaker.h"
 
-std::vector<char> getAlphabet(const std::string& regex)
-{
-  std::vector<char> alphabet{};
-  for(auto e : regex)
-  {
-    if(e != '.' && e != '|' && e != '?' && e != '+' && e != '*')
-    {
-      alphabet.push_back(e);
-    }
-  }
-  std::sort(alphabet.begin(), alphabet.end());
-  auto last = std::unique(alphabet.begin(), alphabet.end());
-  alphabet.erase(last, alphabet.end());
-  return alphabet;
-}
 
-uint getValue(const std::vector<char>& alphabet, const char& input)
-{
-  for(uint i = 0; i < alphabet.size(); i++)
-  {
-    if(alphabet[i] == input)
-    {
-      return i;
-    }
-  }
-  return -1;
-}
-
-uint shiftValue(const uint& input)//last index of alphabet
-{
-  uint i = 0;
-  while(input >= pow(2,i))
-  {
-    i++;
-  }
-  return i--;
-}
-uint32_t getHash(const std::vector<char>& alphabet, const std::string& input, const uint& sValue)
-{
-  uint32_t hash = 0;
-  for(uint i = 0; i < input.size(); i++)
-  {
-    uint ordValue = getValue(alphabet, input[i]);
-    hash <<= sValue;
-    hash |= ordValue;
-  }
-  return hash;
-}
 
 kState* kstate(const std::string& qGram)
 {
@@ -206,7 +159,7 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
       {
         k = liste[i];
         input->home_->outs_.push_back(k->home_);
-        delete k;
+        //delete k;
       }
     }
   }

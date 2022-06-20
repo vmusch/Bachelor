@@ -1,8 +1,6 @@
 #ifndef KOROTKOV_NFA_H
 #define KOROTKOV_NFA_H
 
-
-#include <set>
 #include <string>
 #include <vector>
 #include "nfa_pointer.h"
@@ -31,12 +29,6 @@ struct Path
   ~Path(){};
 };
 
-std::vector<char> getAlphabet(const std::string& regex);
-
-uint shiftValue(const uint& input);
-
-uint32_t getHash(const std::vector<char>& alphabet, const std::string& input, const uint& sValue);
-
 kState* kstate(const std::string& qGram);
 
 keyState* key(const std::string& qGramFrag, State* positionNFA_, kState* home);
@@ -56,7 +48,5 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match);
 std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q);
 
 void dfs(kState* input, std::vector<std::vector<std::string>>& matrix);
-
-//std::set<std::set<std::string>> getMatrix(std::vector<kState* > input);
 
 #endif
