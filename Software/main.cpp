@@ -26,7 +26,7 @@ int main()
   {
     std::cout<<e<<" ";
   }
- 
+
   std::cout<<"\n";
   std::vector<std::vector<std::string>> matrix{};
 
@@ -43,7 +43,7 @@ int main()
     }
     std::cout<<"\n";
   }
-  matrixTXT(matrix, a);
+  //matrixTXT(matrix, a);
   printGraph(knfa,"out.dot");
   return 0;
   //at.g.    at| gc| |    at| gc| | |    at| gc| |   |.  ta.g.tg.a.|ta.a.|.

@@ -84,6 +84,27 @@ void firstPhase(State* it_ptr, std::vector<keyState *>& output, const uint& q)
   }
 }
 
+bool allCharactersSame(const std::string& s)
+{
+    int n = s.length();
+    for (int i = 1; i < n; i++)
+        if (s[i] != s[0])
+            return false;
+
+    return true;
+}
+
+int linSearchK(const std::vector<kState *>& liste, std::string obj)
+{
+  for(uint i = 0; i<liste.size(); i++)
+  {
+    if(liste[i]->qGram_ == obj)
+    {
+      return i;
+    }
+  }
+  return -1;
+}
 //später optimieren
 int linSearch(const std::vector<keyState *>& liste, keyState* obj)
 {
@@ -130,7 +151,7 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
 
   k = key(qGramFrag, input->positionNFA_->out1_, nullptr);
   nextStep(stack, k);
- 
+
   while(!stack.empty())
   {
     k = stack.top();
@@ -149,17 +170,23 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
       if(i == -1)
       {
         qGram += k->positionNFA_->c_;
+        //if(!allCharactersSame(qGram))
+        //{
         e = kstate(qGram);
         input->home_->outs_.push_back(e);
         k->home_ = e;
         liste.push_back(k);
+        //}
         qGram = qGramFrag;
       }
       else
       {
+        delete k;
         k = liste[i];
-        input->home_->outs_.push_back(k->home_);
-        //delete k;
+        if(k->home_ != input->home_)
+        {
+          input->home_->outs_.push_back(k->home_);
+        }
       }
     }
   }
@@ -194,15 +221,43 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   //erstellen der start states und umschreiben der pointer der keys
   std::string edge;
   output.reserve(queue.size());
-  for(auto v : queue)
+
+  for(uint i = 0; i < queue.size(); i++)
   {
-    edge = v->qGramFrag_;
-    edge += v->positionNFA_->c_;
-    e = kstate(edge);
-    e->start_ = 1;
-    v->home_ = e;
-    output.push_back(e);
+    edge = queue[i]->qGramFrag_;
+    edge += queue[i]->positionNFA_->c_;
+    int l = linSearchK(output, edge);
+    if(l != -1)
+    {
+        queue[i]->home_ = output[l];
+    }
+    else
+    {
+      e = kstate(edge);
+      e->start_ = 1;
+      queue[i]->home_ = e;
+      output.push_back(e);
+    }
   }
+
+
+
+  // for(uint i = 0; i < queue.size(); i++)
+  // {
+  //   if(i > 0 && queue[i]->qGramFrag_ == queue[i-1]->qGramFrag_)
+  //   {
+  //     queue[i]->home_ = queue[i-1]->home_;
+  //   }
+  //   else
+  //   {
+  //     edge = queue[i]->qGramFrag_;
+  //     edge += queue[i]->positionNFA_->c_;
+  //     e = kstate(edge);
+  //     e->start_ = 1;
+  //     queue[i]->home_ = e;
+  //     output.push_back(e);
+  //   }
+  // }
   //neue keys erstellen und in queue eintragen, sowie kstate erstellen und verknüpfen
   for(uint i = 0; i < queue.size(); i++)
   {
@@ -231,7 +286,7 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
   while(!stack.empty())
   {
     p = stack.top();
-    
+
     if(p->position_->marked_ == 0)
     {
       line.push_back(p->position_->qGram_);

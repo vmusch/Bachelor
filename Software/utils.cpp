@@ -78,7 +78,7 @@ void matrixTXT(const std::vector<std::vector<std::string>>& matrix,
 
   std::vector<uint16_t> line(hashP,0);
   std::fstream f;
-  
+
   f.open("Matrix_out.txt", std::ios::out);
   if(f.good())
   {
@@ -103,7 +103,7 @@ void matrixTXT(const std::vector<std::vector<std::string>>& matrix,
       std::fill(line.begin(), line.end(), 0);
     }
   }
-}
+}/*
 int main()
 {
   std::vector<char> alphabet = {'a','b','c','d','e','f'};
@@ -116,4 +116,4 @@ int main()
       std::cout<<w<<" "<<z<<" ";
       //f << getQgram(alphabet, i, sValue, matrix[0][0].size()) << " ";
     }
-}
+}*/
