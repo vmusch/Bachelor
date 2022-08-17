@@ -103,7 +103,21 @@ void matrixTXT(const std::vector<std::vector<std::string>>& matrix,
       std::fill(line.begin(), line.end(), 0);
     }
   }
-}/*
+}
+
+bool allCharactersSame(const std::string& s)
+{
+    int n = s.length();
+    for (int i = 1; i < n; i++)
+        if (s[i] != s[0])
+            return false;
+
+    return true;
+}
+
+
+
+/*
 int main()
 {
   std::vector<char> alphabet = {'a','b','c','d','e','f'};

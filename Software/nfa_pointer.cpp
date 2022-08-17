@@ -33,13 +33,7 @@ State* state(const int& c, State *out1, State *out2)
  * Frag.out is a list of places that need to be set to the
  * next state for this fragment.
  */
-/*
-struct Frag
-{
-  State *start;
-	std::vector<State *> out;
-};
-*/
+
 Frag frag(State *start, 	std::vector<State *> out)
 {
   Frag n = { start, out };
@@ -146,6 +140,10 @@ State* post2nfaE(const std::string& postfix)
   return e.start;
 }
 
+/* 
+ * generates a randomized word
+ * that are part of the language that the automaton represents 
+ */
 std::string getRandomWord(State* startptr)
 {
 	std::string out{};
@@ -167,6 +165,9 @@ std::string getRandomWord(State* startptr)
 	return out;
 }
 
+/* 
+ * Helpfunction from deleteGraph
+ */
 void add(std::vector<State* >& a, State* b)
 {
 	if(b->c_ != -1)
@@ -179,6 +180,10 @@ void add(std::vector<State* >& a, State* b)
 			add(a, b->out2_);
 	}
 }
+
+
+/* deletes all pointer of the nfa
+ */
 void deleteGraph(State* startptr)
 {
 	std::vector<State* > a{};
@@ -191,33 +196,3 @@ void deleteGraph(State* startptr)
 		delete e;
 	}
 }
-
-// int main()
-// {
-
-// 	//std::vector<std::string> a ={"a","ab.","ab|","a*","a+","a?"};
-// 	State * startptr;
-// 	//b+c?(a|b)*b+
-// 	//std::string a = "b+c?.ab|*.b+.";
-// 	//abc(cba)*abc
-// 	//std::string a = "ab.c.cb.a.*.ab.c..";
-// 	//a(b+|c+)d
-// 	std::string a = "ab+c+|.d.";
-// 	startptr = post2nfaE(a);
-// 	std::vector<int> m;
-
-// 	for(int i = 0; i <= 10; i++)
-// 	{
-// 		std::string rndWord = getRandomWord(startptr);
-// 		std::cout<<rndWord<<"\n";
-// 	}
-
-// 	// for(auto e : a)
-// 	// {
-// 	// 	startptr = post2nfaE(e);
-// 	// }
-// 	deleteGraph(startptr);
-
-//   return 0;
-// }
-

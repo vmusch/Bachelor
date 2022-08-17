@@ -28,12 +28,8 @@ struct Frag
 	std::vector<State *> out;
 };
 
-Frag frag(State *start, std::vector<State *> out);/*
-{
-  Frag n = { start, out };
-  return n;
-}
-*/
+Frag frag(State *start, std::vector<State *> out);
+
 std::vector<State *> getVec(State *input);
 
 std::vector<State *> appendVec(const	std::vector<State *>& vec1, const std::vector<State *>& vec2);

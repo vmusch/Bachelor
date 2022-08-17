@@ -32,6 +32,11 @@ keyState* key(const std::string& qGramFrag, State *positionNFA, kState * home)
   return ptr;
 }
 
+/*
+ * Helpfunction of firstPhas
+ * represents one Step in the Automaton 
+ */
+
 void oneStep(std::stack<keyState *>& stack, State* itptr, kState* kptr, std::string& qGram)
 {
   keyState *e1, *e2;
@@ -54,6 +59,12 @@ void oneStep(std::stack<keyState *>& stack, State* itptr, kState* kptr, std::str
         break;
   }
 }
+
+/*
+ * represents the first phase in the construction of the Automaton
+ * creates the keys that are accessible from the start node 
+ * Throws an error, if the q-gram length longer than the shortest possible q-gram
+ */
 
 void firstPhase(State* it_ptr, std::vector<keyState *>& output, const uint& q)
 {
@@ -86,15 +97,10 @@ void firstPhase(State* it_ptr, std::vector<keyState *>& output, const uint& q)
   }
 }
 
-bool allCharactersSame(const std::string& s)
-{
-    int n = s.length();
-    for (int i = 1; i < n; i++)
-        if (s[i] != s[0])
-            return false;
-
-    return true;
-}
+/*
+ * linSearch and linSearchK are simple linear search for kStates and key objects
+ * can be optimized in example with an hash table
+ */
 
 int linSearchK(const std::vector<kState *>& liste, std::string obj)
 {
@@ -107,7 +113,7 @@ int linSearchK(const std::vector<kState *>& liste, std::string obj)
   }
   return -1;
 }
-//später optimieren
+
 int linSearch(const std::vector<keyState *>& liste, keyState* obj)
 {
   for(uint i = 0; i<liste.size(); i++)
@@ -119,6 +125,13 @@ int linSearch(const std::vector<keyState *>& liste, keyState* obj)
   }
   return -1;
 }
+
+
+/*
+ * Helpfunction for nextKeys and is part of the sec. Phase
+ * is similar to oneStap 
+ * Match State is not accesable
+ */
 
 void nextStep(std::stack<keyState *>& stack, keyState* input)
 {
@@ -136,11 +149,13 @@ void nextStep(std::stack<keyState *>& stack, keyState* input)
         stack.push(e2);
         stack.push(e1);
         break;
-    /*case Match:
-        //std::cerr<<"Somthing went wrong"<<"\n";
-        break;*/
   }
 }
+
+/*
+ * creates the other keys and nodes for the korotkov Automaton
+ * get the vec of key from firstPhase
+ */
 
 void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
 {
@@ -172,13 +187,10 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
       if(i == -1)
       {
         qGram += k->positionNFA_->c_;
-        //if(!allCharactersSame(qGram))
-        //{
         e = kstate(qGram);
         input->home_->outs_.push_back(e);
         k->home_ = e;
         liste.push_back(k);
-        //}
         qGram = qGramFrag;
       }
       else
@@ -242,29 +254,12 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
     }
   }
 
-
-
-  // for(uint i = 0; i < queue.size(); i++)
-  // {
-  //   if(i > 0 && queue[i]->qGramFrag_ == queue[i-1]->qGramFrag_)
-  //   {
-  //     queue[i]->home_ = queue[i-1]->home_;
-  //   }
-  //   else
-  //   {
-  //     edge = queue[i]->qGramFrag_;
-  //     edge += queue[i]->positionNFA_->c_;
-  //     e = kstate(edge);
-  //     e->start_ = 1;
-  //     queue[i]->home_ = e;
-  //     output.push_back(e);
-  //   }
-  // }
   //neue keys erstellen und in queue eintragen, sowie kstate erstellen und verknüpfen
   for(uint i = 0; i < queue.size(); i++)
   {
     nextKeys(queue, queue[i], match);
   }
+  //delete the keys
   for(auto b:queue)
   {
     delete b;
@@ -279,6 +274,10 @@ Path* path(kState* position)
   p->position_ = position;
   return p;
 }
+
+/*
+ * depht first search, generates the matrix with the possible paths
+ */
 
 void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
 {
