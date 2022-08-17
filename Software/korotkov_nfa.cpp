@@ -69,6 +69,7 @@ void firstPhase(State* it_ptr, std::vector<keyState *>& output, const uint& q)
     stack.pop();
     if(k->positionNFA_->c_ == Match)
     {
+      delete k;
       throw int();
       //std::cerr<<"Q-Gram zu lang gewählt"<<"\n";
     }
@@ -80,6 +81,7 @@ void firstPhase(State* it_ptr, std::vector<keyState *>& output, const uint& q)
     else
     {
       oneStep(stack, k->positionNFA_, nullptr, k->qGramFrag_);
+      delete k;
     }
   }
 }
@@ -183,7 +185,7 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match)
       {
         delete k;
         k = liste[i];
-        if(k->home_ != input->home_)
+        if(k->home_ != input->home_ && k->home_->start_ == 0)
         {
           input->home_->outs_.push_back(k->home_);
         }
@@ -263,7 +265,10 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const uint& q)
   {
     nextKeys(queue, queue[i], match);
   }
-
+  for(auto b:queue)
+  {
+    delete b;
+  }
   return output;
 }
 
