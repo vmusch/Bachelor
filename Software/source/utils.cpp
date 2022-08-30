@@ -3,6 +3,7 @@
 #include <math.h>
 #include <fstream>
 #include <string>
+#include <stack>
 #include <vector>
 
 std::vector<char> getAlphabet(const std::string& regex)
@@ -21,6 +22,66 @@ std::vector<char> getAlphabet(const std::string& regex)
   return alphabet;
 }
 
+
+void matrixTotxt(const std::vector<std::vector<std::string>>& matrix, std::string& filename)
+{
+  std::fstream f;
+  
+  f.open(filename += ".txt", std::ios::out);
+  if(f.good())
+  {
+    for(auto z : matrix)
+    {
+      for(auto s : z)
+      {
+        f << s <<" ";
+      }
+      f << "\n";
+    }
+  }
+}
+
+// bool isFunction(const char& a)
+// {
+//       switch(a){
+//       default: //char
+//               return false;
+//               break;
+//       case '(':  
+//               return true;
+//               break;
+//       case ')':  
+//               return true;
+//               break;
+//       case '|':  
+//               return true;
+//               break;
+//       case '?': 
+//               return true;
+//               break;
+//       case '*': 
+//               return true;
+//               break;
+//       case '+':
+//               return true;
+// 							break;
+//     }
+// }
+
+// std::string shuntingYard(const std::string& regex)
+// {
+//   std::string out;
+//   std::stack<char> stack{};
+//   for(auto elem : regex)
+//   {
+//     isFunction(elem) ? stack.push(elem) : out += elem ;
+//     while()
+//   }
+
+// }
+
+
+//Not used
 uint getValue(const std::vector<char>& alphabet, const char& input)
 {
   for(uint i = 0; i < alphabet.size(); i++)
@@ -33,6 +94,7 @@ uint getValue(const std::vector<char>& alphabet, const char& input)
   return -1;
 }
 
+//Not used
 uint shiftValue(const uint& input)//last index of alphabet biggest posibil nr
 {
   uint i = 1;
@@ -42,6 +104,8 @@ uint shiftValue(const uint& input)//last index of alphabet biggest posibil nr
   }
   return i;
 }
+//NOT Used
+//Hash funkction that only works with an Alphabet of the size 2^n
 uint32_t getHash(const std::vector<char>& alphabet, const std::string& input, const uint& sValue)
 {
   uint32_t hash = 0;
@@ -53,6 +117,8 @@ uint32_t getHash(const std::vector<char>& alphabet, const std::string& input, co
   }
   return hash;
 }
+
+//NOT Used
 std::string getQgram(const std::vector<char>& alphabet, uint32_t input, const uint& sValue, uint qlength)
 {
   std::string out = "";
@@ -70,6 +136,7 @@ std::string getQgram(const std::vector<char>& alphabet, uint32_t input, const ui
   return out;
 }
 
+//NOT Used
 void matrixTXT(const std::vector<std::vector<std::string>>& matrix,
                 const std::vector<char>& alphabet)
 {
@@ -105,6 +172,7 @@ void matrixTXT(const std::vector<std::vector<std::string>>& matrix,
   }
 }
 
+//NOT Used
 bool allCharactersSame(const std::string& s)
 {
     int n = s.length();
