@@ -1,13 +1,12 @@
 cmake_minimum_required (VERSION 3.4)
 project (korotkovAutomata CXX)
-set(SOURCES main.cpp nfa_pointer.cpp korotkov_nfa.cpp graphMaker.cpp utils.cpp )
-add_executable(korotkov ${PROJECT_SOURCE_DIR}/${SOURCES})
 # add seqan3 to search path
-#list (APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../seqan3/build_system")
+list (APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../seqan3/build_system")
  
 # require seqan3 with a version between >=3.0.0 and <4.0.0
-#find_package (seqan3 3.0 REQUIRED)
- 
+find_package (seqan3 3.0 REQUIRED)
+
+set(SOURCES main.cpp nfa_pointer.cpp korotkov_nfa.cpp graphMaker.cpp utils.cpp )
 # build app with seqan3
-#add_executable (hello_world hello_world.cpp)
-#target_link_libraries (hello_world seqan3::seqan3)
+add_executable(korotkov ${PROJECT_SOURCE_DIR}/${SOURCES})
+target_link_libraries (korotkov seqan3::seqan3)

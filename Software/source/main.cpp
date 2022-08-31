@@ -7,10 +7,11 @@
 #include "graphMaker.h"
 #include "nfa_pointer.h"
 #include "utils.h"
+#include <seqan3/core/debug_stream.hpp>
 
 int main(int argc, char *argv[])
 {
-
+  seqan3::debug_stream << "Hello World!\n";
   if(argc > 5 || argc < 3)
   {
     
