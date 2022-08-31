@@ -19,11 +19,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    std::cout<<"hallo"<<"\n";
-    std::cout <<argc;
-    std::cout<<"hallo"<<"\n";
     int qlength = std::stoi(argv[2]);
-    std::cout<<"hallo"<<"\n";
     std::vector<char> a = getAlphabet(argv[1]);
 
     State* nfa = post2nfaE(argv[1]);
