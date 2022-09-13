@@ -18,9 +18,9 @@ The Project has the following directory layout:<br>
 Bachelor<br>
 |-picture<br>
 |-Software<br>
-    |- source<br>
-    |- build<br>
-    |- seqan<br>
+>|- source<br>
+>|- build<br>
+>|- seqan<br>
 
 For the setup got to the build directory and run: <br>
 $ cmake -DCMAKE_BUILD_TYPE=Release ../source
