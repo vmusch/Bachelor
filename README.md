@@ -14,17 +14,34 @@ The regex need to be written in reverse polish notation and supports the followi
 example:<br>
 a(b^+|c^+)d => ab+c+|.d.<br>
 
-text in brackets is the explanatory<br>
-$ make main<br>
-$./main "ab+c+|.d."(regex) "3"(length of q-gram) "Matrix"(optianl .txt file) "Automat"(optional .dot file)<br>
+The Project has the following directory layout:<br>
+Bachelor<br>
+|-picture<br>
+|-Software<br>
+    |- source<br>
+    |- build<br>
+    |- seqan<br>
 
+For the setup got to the build directory and run: <br>
+$ cmake -DCMAKE_BUILD_TYPE=Release ../source
+$ make <br>
+
+text in brackets is the explanatory<br>
+$./korotkov "ab+c+|.d."(regex) "3"(length of q-gram) "Matrix"(optianl .txt file) "Automat"(optional .dot file)<br>
+
+the output is on now a little bit experimentel<br>
 output:<br>
-abb bbb bbd<br> 
-abb bbd <br>
-abd <br>
-acc ccc ccd <br>
-acc ccd <br>
-acd <br>
+acd 11 [1,0,0,0,0] -- q-Gram / hashnr. / bitvec<br>
+abd 7 [0,1,0,0,0]<br>
+bbd 23 [0,0,1,0,0]<br>
+bbb 21 [0,0,0,1,0]<br>
+abb 5 [0,0,0,0,1]<br>
+1 2 3  -- row of the matrix that is necessary (need to be fixed!)<br>
+a b c d  -- alphabet <br>
+abb bbb bbd 0 0 1 1 1 --set of q-Grams / set as bitvector<br>
+abb bbd 0 0 1 0 1 <br>
+abd 0 1 0 0 0 <br>
+acd 1 0 0 0 0 <br>
 
 the .dot file can be transformed int an png file with the following command.<br>
 $ dot -Tpng out.dot > out.png

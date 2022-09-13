@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <bitset>
 #include <string>
 #include <stack>
 #include "korotkov_nfa.h"
@@ -8,22 +9,11 @@
 #include "nfa_pointer.h"
 #include "utils.h"
 #include <seqan3/core/debug_stream.hpp>
+#include <seqan3/search/views/minimiser_hash.hpp>
 #include <seqan3/search/dream_index/interleaved_bloom_filter.hpp>
 
 int main(int argc, char *argv[])
 {
-  seqan3::interleaved_bloom_filter ibf{seqan3::bin_count{12u}, seqan3::bin_size{8192u}};
-  ibf.emplace(126, seqan3::bin_index{0u});
-  ibf.emplace(712, seqan3::bin_index{3u});
-  ibf.emplace(237, seqan3::bin_index{9u});
-
-  // Query the Interleaved Bloom Filter. Note that there may be false positive results!
-  // A `1` at position `i` indicates the (probable) presence of the query in bin `i`.
-  // Capture the result by reference to avoid copies.
-  auto agent = ibf.membership_agent();
-  auto & result = agent.bulk_contains(126);
-  seqan3::debug_stream << result << '\n'; // prints [0,0,0,1,0,0,0,0,0,0,0,0]
-  seqan3::debug_stream << "Hello World!\n";
   if(argc > 5 || argc < 3)
   {
     
@@ -33,7 +23,7 @@ int main(int argc, char *argv[])
   else
   {
     int qlength = std::stoi(argv[2]);
-    std::vector<char> a = getAlphabet(argv[1]);
+    std::vector<char> alphabet = getAlphabet(argv[1]);
 
     State* nfa = post2nfaE(argv[1]);
     std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
@@ -46,6 +36,56 @@ int main(int argc, char *argv[])
       dfs(i,matrix);
     }
     uMatrix(matrix);
+
+
+    //IBF befüllt
+    std::unordered_set<std::string> qGramA = getQgramAlphabet(matrix);
+    seqan3::interleaved_bloom_filter ibf{seqan3::bin_count{qGramA.size()}, seqan3::bin_size{8192u}};
+    uint i = 0;
+    for(auto qGramE : qGramA)
+    {
+      uint32_t hash = getHash(alphabet, qGramE, 2);
+      ibf.emplace(hash, seqan3::bin_index{i});
+      auto agent = ibf.membership_agent();
+      auto & result = agent.bulk_contains(hash);
+      seqan3::debug_stream<< qGramE <<" "<<hash<<" "<<result<<"\n";
+      i++;
+    } 
+
+    //bitvec erstellen
+    std::vector<std::vector<bool>> bitMatrix{};
+    std::vector<int> bitMatrixFinal{};
+    auto agent = ibf.membership_agent();
+    
+    for(auto setQ : matrix)
+    {
+      std::vector<bool> bitVecQgram(qGramA.size(),0);
+      for(auto qgramM : setQ)
+      {
+        auto & bitvec = agent.bulk_contains(getHash(alphabet, qgramM, 2));
+        for(int i = 0; i < bitvec.size(); i++)
+        {
+          bitVecQgram[i] = bitVecQgram[i] | bitvec[i];
+        }
+      }
+      bitMatrix.push_back(bitVecQgram);
+    }
+    //std::cout<<bitOp(bitMatrix[0], bitMatrix[1])<<"\n";
+    //interessante sets filtern
+    for(uint i = 0; i < bitMatrix.size()-1; i++)
+    {
+      if(bitOp(bitMatrix[i], bitMatrix[i+1]) == 1)
+      {
+        bitMatrixFinal.push_back(i);
+      }
+    }
+    bitMatrixFinal.push_back(bitMatrix.size()-1);
+
+    for(auto elem : bitMatrixFinal)
+    {
+      std::cout<<elem<<" ";
+    }
+    std::cout<<"\n";
     if(argc >= 4)
     {
       std::string matrixfile = argv[3];
@@ -53,15 +93,18 @@ int main(int argc, char *argv[])
     }
     else
     {
-      std::vector<char> a = getAlphabet(argv[1]);
-      for(auto e : a)
+      for(auto elem : alphabet)
       {
-        std::cout<<e<<" ";
+        std::cout<<elem<<" ";
       }
       std::cout<<"\n";
-      for(auto i : matrix)
+      for(uint i  = 0; i < matrix.size(); i++)
       {
-        for(auto j : i)
+        for(auto j : matrix[i])
+        {
+          std::cout<<j<<" ";
+        }
+        for(auto j : bitMatrix[i])
         {
           std::cout<<j<<" ";
         }
@@ -77,48 +120,3 @@ int main(int argc, char *argv[])
   }
   return 0;
 }
-
-
-
-
-
-
-//   std::string regex;
-//   int qlength = 0;
-//   std::cout<<"Enter Regex in RPN:"<<"\n";
-//   std::cin>>regex;
-//   std::cout<<"Enter qGram length:"<<"\n";
-//   std::cin>>qlength;
-//   State* nfa = post2nfaE(regex);
-
-//   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
-
-//   std::vector<char> a = getAlphabet(regex);
-//   for(auto e : a)
-//   {
-//     std::cout<<e<<" ";
-//   }
-
-//   std::cout<<"\n";
-//   std::vector<std::vector<std::string>> matrix{};
-
-//   for(auto i : knfa)
-//   {
-//     dfs(i,matrix);
-//   }
-//   uMatrix(matrix);
-//   for(auto i : matrix)
-//   {
-//     for(auto j : i)
-//     {
-//       std::cout<<j<<" ";
-//     }
-//     std::cout<<"\n";
-//   }
-//   std::string h = "out";
-//   matrixTotxt(matrix, h);
-//   printGraph(knfa,"out.dot");
-//   return 0;
-//   //at.g.    at| gc| |    at| gc| | |    at| gc| |   |.  ta.g.tg.a.|ta.a.|.
-// }
-// at.g.at|gc||at|gc|||at|gc|||*.ta.g.tg.a.|ta.a.|.

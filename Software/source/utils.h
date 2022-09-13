@@ -3,11 +3,15 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 std::vector<char> getAlphabet(const std::string& regex);
 
 //soll alle nötigen qgramme finden
-std::vector<std::string> getQgramAlphabet(const std::vector<std::vector<std::string>>& matrix);
+std::unordered_set<std::string>  getQgramAlphabet(const std::vector<std::vector<std::string>>& matrix);
+
+//bitoperation on vec
+int bitOp(std::vector<bool> a, const std::vector<bool> & b);
 
 uint shiftValue(const uint& input);
 

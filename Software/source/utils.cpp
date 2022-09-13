@@ -5,6 +5,7 @@
 #include <string>
 #include <stack>
 #include <vector>
+#include <unordered_set>
 
 std::vector<char> getAlphabet(const std::string& regex)
 {
@@ -22,6 +23,18 @@ std::vector<char> getAlphabet(const std::string& regex)
   return alphabet;
 }
 
+std::unordered_set<std::string>  getQgramAlphabet(const std::vector<std::vector<std::string>>& matrix)
+{
+  std::unordered_set<std::string> out{};
+  for(auto i : matrix)
+  {
+    for(auto j : i)
+    {
+      out.insert(j);
+    }
+  }
+  return out;
+}
 
 void matrixTotxt(const std::vector<std::vector<std::string>>& matrix, std::string& filename)
 {
@@ -116,6 +129,17 @@ uint32_t getHash(const std::vector<char>& alphabet, const std::string& input, co
     hash |= ordValue;
   }
   return hash;
+}
+
+int bitOp(std::vector<bool> a, const std::vector<bool> & b)
+{
+    for(uint i = 0; i < a.size(); i++)
+    {
+        a[i] = a[i] & b[i];
+        a[i] = a[i] ^ b[i];
+        if(a[i] == 1) return 1;
+    }
+    return 0;
 }
 
 //NOT Used
