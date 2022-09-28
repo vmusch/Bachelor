@@ -23,7 +23,7 @@ Bachelor<br>
 >|- seqan<br>
 
 For the setup got to the build directory and run: <br>
-$ cmake -DCMAKE_BUILD_TYPE=Release ../source
+$ cmake -DCMAKE_BUILD_TYPE=Release ../source <br>
 $ make <br>
 
 text in brackets is the explanatory<br>
