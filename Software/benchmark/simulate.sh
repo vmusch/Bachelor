@@ -9,8 +9,8 @@
 
 set -Eeuxo pipefail
 
-BINARY_DIR="/home/vincent/Desktop/raptor/build/bin" # Dir containing "mason_genome", "split_sequence", etc.
-OUT_DIR="/home/vincent/Desktop/raptor/build" # Where simulated data should be stored
+BINARY_DIR="/home/vincent/Desktop/Bachelor/Software/benchmark/bin" # Dir containing "mason_genome", "split_sequence", etc.
+OUT_DIR="/home/vincent/Desktop/Bachelor/Software/build" # Where simulated data should be stored
 LENGTH=419430400 # 4*2^30 =  4GiB
 SEED=42 # was 20181406 before, but was hardcoded to 42 in seqan
 BIN_NUMBER=64
@@ -38,8 +38,15 @@ echo "Splitting genome into bins"
 $BINARY_DIR/split_sequence --input $bin_dir/ref.fasta --length $bin_length --parts $BIN_NUMBER
 # We do not need the reference anymore
 rm $bin_dir/ref.fasta
+#add words to fasta file
+echo "add words"
+# for i in $bin_dir/*.fa
+
+# do
+    
+# done
 # Simulate haplotypes for each bin
-echo "Generating haplotypes"
+#echo "Generating haplotypes"
 # for i in $bin_dir/*.fa
 # do
 #     $BINARY_DIR/mason_variator \
